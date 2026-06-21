@@ -1,2 +1,19 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_it_parc_it_parc,it_parc.it_parc,model_it_parc_it_parc,base.group_user,1,1,1,1
+access_it_equipement_technicien,it.equipement technicien,model_it_equipement,it_parc.group_it_technicien,1,0,0,0
+access_it_affectation_technicien,it.affectation technicien,model_it_affectation,it_parc.group_it_technicien,1,0,0,0
+access_it_intervention_technicien,it.intervention technicien,model_it_intervention,it_parc.group_it_technicien,1,1,1,0
+access_it_contrat_technicien,it.contrat technicien,model_it_contrat,it_parc.group_it_technicien,1,0,0,0
+access_it_alerte_technicien,it.alerte technicien,model_it_alerte,it_parc.group_it_technicien,1,0,0,0
+
+access_it_equipement_manager,it.equipement manager,model_it_equipement,it_parc.group_it_manager,1,1,1,1
+access_it_affectation_manager,it.affectation manager,model_it_affectation,it_parc.group_it_manager,1,1,1,1
+access_it_intervention_manager,it.intervention manager,model_it_intervention,it_parc.group_it_manager,1,1,1,1
+access_it_contrat_manager,it.contrat manager,model_it_contrat,it_parc.group_it_manager,1,1,1,1
+access_it_alerte_manager,it.alerte manager,model_it_alerte,it_parc.group_it_manager,1,1,1,1
+
+access_wizard_reaffectation_manager,wizard.reaffectation manager,model_wizard_reaffectation,it_parc.group_it_manager,1,1,1,1
+access_wizard_import_csv_manager,wizard.import.csv manager,model_wizard_import_csv,it_parc.group_it_manager,1,1,1,1
+access_wizard_scan_alerte_manager,wizard.scan.alerte manager,model_wizard_scan_alerte,it_parc.group_it_manager,1,1,1,1
+access_wizard_renouvellement_manager,wizard.renouvellement manager,model_wizard_renouvellement,it_parc.group_it_manager,1,1,1,1
+access_wizard_reaffectation_technicien,wizard.reaffectation technicien,model_wizard_reaffectation,it_parc.group_it_technicien,1,1,1,1
+access_wizard_scan_alerte_technicien,wizard.scan.alerte technicien,model_wizard_scan_alerte,it_parc.group_it_technicien,1,1,1,1

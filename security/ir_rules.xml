@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--
+            RÈGLES D'ACCÈS AUX ENREGISTREMENTS (ir.rule)
+            noupdate="1" : ces règles ne sont pas réécrites
+            lors d'une mise à jour du module.
+        -->
+
+        <!-- ── Équipements ──────────────────────────────────── -->
+
+        <!-- Technicien : lecture seule sur tous les équipements -->
+        <record id="rule_equipement_technicien" model="ir.rule">
+            <field name="name">Équipement : lecture technicien</field>
+            <field name="model_id" ref="model_it_equipement"/>
+            <field name="groups" eval="[(4, ref('it_parc.group_it_technicien'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Manager : accès complet sur tous les équipements -->
+        <record id="rule_equipement_manager" model="ir.rule">
+            <field name="name">Équipement : accès complet manager</field>
+            <field name="model_id" ref="model_it_equipement"/>
+            <field name="groups" eval="[(4, ref('it_parc.group_it_manager'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ── Interventions ────────────────────────────────── -->
+
+        <!-- Technicien : voit et modifie uniquement ses propres interventions -->
+        <record id="rule_intervention_technicien" model="ir.rule">
+            <field name="name">Intervention : technicien voit les siennes</field>
+            <field name="model_id" ref="model_it_intervention"/>
+            <field name="groups" eval="[(4, ref('it_parc.group_it_technicien'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+            <field name="domain_force">
+                [('technicien_id.user_id', '=', user.id)]
+            </field>
+        </record>
+
+        <!-- Manager : accès complet sur toutes les interventions -->
+        <record id="rule_intervention_manager" model="ir.rule">
+            <field name="name">Intervention : accès complet manager</field>
+            <field name="model_id" ref="model_it_intervention"/>
+            <field name="groups" eval="[(4, ref('it_parc.group_it_manager'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ── Contrats ──────────────────────────────────────── -->
+
+        <record id="rule_contrat_manager" model="ir.rule">
+            <field name="name">Contrat : accès complet manager</field>
+            <field name="model_id" ref="model_it_contrat"/>
+            <field name="groups" eval="[(4, ref('it_parc.group_it_manager'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ── Alertes ───────────────────────────────────────── -->
+
+        <record id="rule_alerte_manager" model="ir.rule">
+            <field name="name">Alerte : accès complet manager</field>
+            <field name="model_id" ref="model_it_alerte"/>
+            <field name="groups" eval="[(4, ref('it_parc.group_it_manager'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+    </data>
+</odoo>
