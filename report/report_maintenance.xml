@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_maintenance_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <!-- ── En-tête ───────────────────────── -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h2>Historique des maintenances</h2>
+                            <p class="text-muted">
+                                Généré le :
+                                <t t-esc="context_timestamp(
+                                    datetime.datetime.now()
+                                ).strftime('%d/%m/%Y à %H:%M')"/>
+                                —
+                                <t t-esc="len(docs)"/> intervention(s)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ── Résumé statistiques ────────────── -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="border-bottom pb-1">
+                                Résumé
+                            </h4>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="card text-center p-3">
+                                        <h5>
+                                            <t t-esc="len(docs)"/>
+                                        </h5>
+                                        <small>Interventions totales</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="card text-center p-3">
+                                        <h5>
+                                            <t t-esc="len(docs.filtered(
+                                                lambda i:
+                                                i.type_intervention
+                                                == 'corrective'))"/>
+                                        </h5>
+                                        <small>Correctives</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="card text-center p-3">
+                                        <h5>
+                                            <t t-esc="len(docs.filtered(
+                                                lambda i:
+                                                i.type_intervention
+                                                == 'preventive'))"/>
+                                        </h5>
+                                        <small>Préventives</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="card text-center
+                                                p-3 bg-light">
+                                        <h5>
+                                            <t t-esc="'{:,.0f} FCFA'.format(
+                                                sum(docs.mapped('cout')))"/>
+                                        </h5>
+                                        <small>Coût total</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Tableau interventions ──────────── -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="border-bottom pb-1">
+                                Détail des interventions
+                            </h4>
+                            <table class="table table-sm
+                                          table-bordered table-striped"
+                                   style="font-size: 10px;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Titre</th>
+                                        <th>Équipement</th>
+                                        <th>Type</th>
+                                        <th>Technicien</th>
+                                        <th>Date début</th>
+                                        <th>Date fin</th>
+                                        <th class="text-center">
+                                            Durée (h)
+                                        </th>
+                                        <th>État</th>
+                                        <th class="text-end">
+                                            Coût (FCFA)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="docs.sorted(
+                                        'date_debut', reverse=True)"
+                                       t-as="inv">
+                                        <tr t-attf-class="
+                                            #{ 'table-danger'
+                                               if inv.state == 'annule'
+                                               else 'table-warning'
+                                               if inv.state == 'en_cours'
+                                               else 'table-info'
+                                               if inv.state == 'planifie'
+                                               else '' }">
+                                            <td>
+                                                <t t-esc="inv.reference"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.equipement_id.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.type_intervention"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.technicien_id.name
+                                                          or '—'"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.date_debut"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.date_fin or '—'"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-esc="'%.1f' % inv.duree_heures"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="inv.state"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="'{:,.0f}'.format(
+                                                    inv.cout)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="fw-bold table-light">
+                                        <td colspan="7">Total</td>
+                                        <td class="text-center">
+                                            <t t-esc="'%.1f' % sum(
+                                                docs.mapped(
+                                                    'duree_heures'))"/>
+                                        </td>
+                                        <td></td>
+                                        <td class="text-end">
+                                            <t t-esc="'{:,.0f} FCFA'.format(
+                                                sum(docs.mapped('cout')))"/>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ── Rapport par équipement ─────────── -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4 class="border-bottom pb-1">
+                                Coûts par équipement
+                            </h4>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Équipement</th>
+                                        <th class="text-center">
+                                            Nb interventions
+                                        </th>
+                                        <th class="text-center">
+                                            Durée totale (h)
+                                        </th>
+                                        <th class="text-end">
+                                            Coût total (FCFA)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="equipements_uniques"
+                                       t-value="docs.mapped(
+                                           'equipement_id')"/>
+                                    <t t-foreach="equipements_uniques"
+                                       t-as="eq">
+                                        <t t-set="inv_eq"
+                                           t-value="docs.filtered(
+                                               lambda i:
+                                               i.equipement_id == eq)"/>
+                                        <tr>
+                                            <td>
+                                                <t t-esc="eq.name"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-esc="len(inv_eq)"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-esc="'%.1f' % sum(
+                                                    inv_eq.mapped(
+                                                        'duree_heures'))"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="'{:,.0f}'.format(
+                                                    sum(inv_eq.mapped(
+                                                        'cout')))"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

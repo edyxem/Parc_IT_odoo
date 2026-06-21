@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_wizard_import_csv_form" model="ir.ui.view">
+            <field name="name">wizard.import.csv.form</field>
+            <field name="model">wizard.import.csv</field>
+            <field name="arch" type="xml">
+                <form string="Import CSV d'équipements">
+                    <sheet>
+                        <group invisible="state == 'done'">
+                            <group string="Fichier CSV">
+                                <field name="fichier_csv"
+                                       widget="binary"
+                                       filename="nom_fichier"/>
+                                <field name="nom_fichier" invisible="1"/>
+                            </group>
+                            <group string="Options">
+                                <field name="delimiteur"/>
+                                <field name="encodage"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-info"
+                             role="alert"
+                             invisible="state == 'done'">
+                            <strong>Format CSV attendu :</strong><br/>
+                            <code>numero_serie, name, categorie, marque,
+                                  modele, date_achat (YYYY-MM-DD),
+                                  valeur_achat, date_fin_garantie
+                                  (YYYY-MM-DD), site</code><br/>
+                            Catégories valides :
+                            <code>poste, serveur, imprimante,
+                                  reseau, telephone, autre</code><br/>
+                            Sites valides :
+                            <code>abidjan1, abidjan2, bouake</code>
+                        </div>
+
+                        <group invisible="state != 'done'">
+                            <group string="Résultats">
+                                <field name="nb_crees" readonly="1"
+                                       string="Équipements créés"/>
+                                <field name="nb_ignores" readonly="1"
+                                       string="Ignorés (doublons)"/>
+                                <field name="nb_erreurs" readonly="1"
+                                       string="Erreurs"/>
+                            </group>
+                        </group>
+
+                        <group string="Détail du rapport"
+                               invisible="state != 'done'">
+                            <field name="rapport_texte" nolabel="1"
+                                   readonly="1" widget="text"
+                                   style="font-family: monospace;
+                                          font-size: 12px;
+                                          min-height: 200px;"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_importer"
+                                string="Lancer l'import"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state == 'done'"/>
+                        <button string="Fermer"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

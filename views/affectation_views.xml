@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE LISTE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_affectation_list" model="ir.ui.view">
+            <field name="name">it.affectation.list</field>
+            <field name="model">it.affectation</field>
+            <field name="arch" type="xml">
+                <list string="Affectations"
+                      decoration-success="active == True"
+                      decoration-muted="active == False">
+                    <field name="equipement_id"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin" optional="show"/>
+                    <field name="duree_jours"
+                           string="Durée (j)"/>
+                    <field name="motif" optional="show"/>
+                    <field name="active"
+                           widget="boolean"
+                           string="Active"/>
+                    <field name="user_id"
+                           string="Enregistré par"
+                           optional="hide"/>
+                    <button name="action_cloturer"
+                            string="Clôturer"
+                            type="object"
+                            icon="fa-times"
+                            invisible="not active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE FORMULAIRE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_affectation_form" model="ir.ui.view">
+            <field name="name">it.affectation.form</field>
+            <field name="model">it.affectation</field>
+            <field name="arch" type="xml">
+                <form string="Affectation">
+                    <header>
+                        <button name="action_cloturer"
+                                string="Clôturer l'affectation"
+                                type="object"
+                                class="btn-warning"
+                                invisible="not active"
+                                confirm="Confirmer la clôture de cette affectation ?"/>
+                        <field name="active"
+                               widget="statusbar"
+                               statusbar_visible="1,0"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group string="Équipement et employé">
+                                <field name="equipement_id"/>
+                                <field name="employee_id"/>
+                                <field name="department_id"/>
+                            </group>
+                            <group string="Période">
+                                <field name="date_debut"/>
+                                <field name="date_fin"/>
+                                <field name="duree_jours"
+                                       readonly="1"
+                                       string="Durée (jours)"/>
+                                <field name="user_id"
+                                       readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Motif">
+                            <field name="motif"
+                                   nolabel="1"
+                                   placeholder="Motif de l'affectation…"/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE RECHERCHE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_affectation_search" model="ir.ui.view">
+            <field name="name">it.affectation.search</field>
+            <field name="model">it.affectation</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher une affectation">
+                    <field name="equipement_id"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <separator/>
+                    <filter name="active"
+                            string="Actives uniquement"
+                            domain="[('active', '=', True)]"/>
+                    <filter name="cloturees"
+                            string="Clôturées"
+                            domain="[('active', '=', False)]"/>
+                    <group expand="0" string="Grouper par">
+                        <filter name="group_employee"
+                                string="Employé"
+                                context="{'group_by': 'employee_id'}"/>
+                        <filter name="group_department"
+                                string="Département"
+                                context="{'group_by': 'department_id'}"/>
+                        <filter name="group_equipement"
+                                string="Équipement"
+                                context="{'group_by': 'equipement_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

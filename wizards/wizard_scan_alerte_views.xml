@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_wizard_scan_alerte_form" model="ir.ui.view">
+            <field name="name">wizard.scan.alerte.form</field>
+            <field name="model">wizard.scan.alerte</field>
+            <field name="arch" type="xml">
+                <form string="Scanner les alertes">
+                    <sheet>
+                        <group invisible="state == 'done'">
+                            <group string="Paramètres">
+                                <field name="delai_jours"/>
+                            </group>
+                            <group string="Types à scanner">
+                                <field name="inclure_garanties"/>
+                                <field name="inclure_contrats"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-info"
+                             invisible="state == 'done'">
+                            Ce scan détecte les garanties et contrats
+                            expirant dans les
+                            <field name="delai_jours" class="d-inline"/>
+                            prochains jours et crée les alertes
+                            correspondantes si elles n'existent pas.
+                        </div>
+
+                        <group invisible="state != 'done'">
+                            <group string="Résultats">
+                                <field name="nb_alertes_creees" readonly="1"
+                                       string="Alertes créées"/>
+                                <field name="nb_alertes_existantes" readonly="1"
+                                       string="Déjà existantes"/>
+                            </group>
+                        </group>
+
+                        <group string="Détail" invisible="state != 'done'">
+                            <field name="rapport_texte" nolabel="1"
+                                   readonly="1" widget="text"
+                                   style="font-family: monospace;
+                                          font-size: 12px;
+                                          min-height: 150px;"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_lancer_scan"
+                                string="Lancer le scan"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state == 'done'"/>
+                        <button string="Fermer"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

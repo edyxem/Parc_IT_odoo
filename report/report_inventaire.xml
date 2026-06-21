@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_inventaire_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <!-- ── En-tête ───────────────────────── -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h2>Inventaire du parc informatique</h2>
+                            <p class="text-muted">
+                                Généré le :
+                                <t t-esc="context_timestamp(
+                                    datetime.datetime.now()
+                                ).strftime('%d/%m/%Y à %H:%M')"/>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ── Résumé par catégorie ───────────── -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="border-bottom pb-1">
+                                Résumé par catégorie
+                            </h4>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Catégorie</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-center">Affectés</th>
+                                        <th class="text-center">
+                                            En maintenance
+                                        </th>
+                                        <th class="text-center">Retirés</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="categories" t-value="[
+                                        ('poste', 'Postes de travail'),
+                                        ('serveur', 'Serveurs'),
+                                        ('imprimante', 'Imprimantes'),
+                                        ('reseau', 'Équipements réseau'),
+                                        ('telephone', 'Téléphones IP'),
+                                        ('autre', 'Autres'),
+                                    ]"/>
+                                    <t t-foreach="categories"
+                                       t-as="cat">
+                                        <t t-set="eqs_cat"
+                                           t-value="docs.filtered(
+                                               lambda e:
+                                               e.categorie == cat[0])"/>
+                                        <t t-if="eqs_cat">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="cat[1]"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="len(eqs_cat)"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="len(eqs_cat.filtered(
+                                                        lambda e:
+                                                        e.state == 'affecte'))"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="len(eqs_cat.filtered(
+                                                        lambda e:
+                                                        e.state == 'maintenance'))"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="len(eqs_cat.filtered(
+                                                        lambda e:
+                                                        e.state == 'retire'))"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="fw-bold table-light">
+                                        <td>TOTAL</td>
+                                        <td class="text-center">
+                                            <t t-esc="len(docs)"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="len(docs.filtered(
+                                                lambda e:
+                                                e.state == 'affecte'))"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="len(docs.filtered(
+                                                lambda e:
+                                                e.state == 'maintenance'))"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="len(docs.filtered(
+                                                lambda e:
+                                                e.state == 'retire'))"/>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ── Liste complète ─────────────────── -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="border-bottom pb-1">
+                                Liste complète des équipements
+                            </h4>
+                            <table class="table table-sm
+                                          table-bordered table-striped"
+                                   style="font-size: 10px;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Nom</th>
+                                        <th>Catégorie</th>
+                                        <th>Marque / Modèle</th>
+                                        <th>N° Série</th>
+                                        <th>Site</th>
+                                        <th>Affecté à</th>
+                                        <th>Fin garantie</th>
+                                        <th>État</th>
+                                        <th class="text-end">
+                                            Valeur (FCFA)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="docs.sorted(
+                                        key=lambda e: (
+                                            e.categorie, e.name))"
+                                       t-as="eq">
+                                        <tr t-attf-class="
+                                            #{ 'table-danger'
+                                               if eq.state == 'retire'
+                                               else 'table-warning'
+                                               if eq.state == 'maintenance'
+                                               else '' }">
+                                            <td>
+                                                <t t-esc="eq.reference"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="eq.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="eq.categorie"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="(eq.marque or '')
+                                                          + ' '
+                                                          + (eq.modele or '')"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="eq.numero_serie
+                                                          or '—'"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="eq.site or '—'"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="eq.employee_id.name
+                                                          or '—'"/>
+                                            </td>
+                                            <td t-attf-class="
+                                                #{ 'text-danger'
+                                                   if eq.garantie_expiree
+                                                   else '' }">
+                                                <t t-esc="eq.date_fin_garantie
+                                                          or '—'"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="eq.state"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="'{:,.0f}'.format(
+                                                    eq.valeur_achat)
+                                                    if eq.valeur_achat
+                                                    else '—'"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="fw-bold table-light">
+                                        <td colspan="9">
+                                            Valeur totale du parc
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="'{:,.0f} FCFA'.format(
+                                                sum(docs.mapped(
+                                                    'valeur_achat')))"/>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

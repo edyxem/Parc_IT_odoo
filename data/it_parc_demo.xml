@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             FOURNISSEURS
+        ══════════════════════════════════════════════════════ -->
+        <record id="partner_dell_ci" model="res.partner">
+            <field name="name">Dell Technologies CI</field>
+            <field name="supplier_rank">1</field>
+            <field name="is_company">True</field>
+            <field name="email">contact@dell-ci.com</field>
+            <field name="phone">+225 27 22 00 00 01</field>
+        </record>
+
+        <record id="partner_hp_ci" model="res.partner">
+            <field name="name">HP Côte d'Ivoire</field>
+            <field name="supplier_rank">1</field>
+            <field name="is_company">True</field>
+            <field name="email">contact@hp-ci.com</field>
+            <field name="phone">+225 27 22 00 00 02</field>
+        </record>
+
+        <record id="partner_cisco_ci" model="res.partner">
+            <field name="name">Cisco Systems CI</field>
+            <field name="supplier_rank">1</field>
+            <field name="is_company">True</field>
+            <field name="email">contact@cisco-ci.com</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             ÉQUIPEMENTS (10 équipements variés)
+        ══════════════════════════════════════════════════════ -->
+
+        <!-- 1. Poste de travail -->
+        <record id="eq_dell_latitude_01" model="it.equipement">
+            <field name="name">Dell Latitude 5520 - DRH</field>
+            <field name="categorie">poste</field>
+            <field name="marque">Dell</field>
+            <field name="modele">Latitude 5520</field>
+            <field name="numero_serie">SN-DELL-001</field>
+            <field name="processeur">Intel Core i7-1165G7</field>
+            <field name="ram">16 Go DDR4</field>
+            <field name="stockage">512 Go SSD</field>
+            <field name="systeme_exploitation">Windows 11 Pro</field>
+            <field name="date_achat">2023-03-15</field>
+            <field name="valeur_achat">850000</field>
+            <field name="date_fin_garantie">2026-03-15</field>
+            <field name="fournisseur_id" ref="partner_dell_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Bureau DRH - Étage 2</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 2. Serveur -->
+        <record id="eq_serveur_hp_01" model="it.equipement">
+            <field name="name">HP ProLiant DL380 - Serveur principal</field>
+            <field name="categorie">serveur</field>
+            <field name="marque">HP</field>
+            <field name="modele">ProLiant DL380 Gen10</field>
+            <field name="numero_serie">SN-HP-SRV-001</field>
+            <field name="processeur">2x Intel Xeon Gold 6226R</field>
+            <field name="ram">128 Go DDR4 ECC</field>
+            <field name="stockage">4 To RAID 5</field>
+            <field name="systeme_exploitation">Ubuntu Server 22.04 LTS</field>
+            <field name="date_achat">2022-06-01</field>
+            <field name="valeur_achat">4500000</field>
+            <field name="date_fin_garantie">2025-06-01</field>
+            <field name="fournisseur_id" ref="partner_hp_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Salle serveurs - RDC</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 3. Imprimante -->
+        <record id="eq_imprimante_hp_01" model="it.equipement">
+            <field name="name">HP LaserJet Pro - Accueil</field>
+            <field name="categorie">imprimante</field>
+            <field name="marque">HP</field>
+            <field name="modele">LaserJet Pro M404dn</field>
+            <field name="numero_serie">SN-HP-IMP-001</field>
+            <field name="date_achat">2023-09-01</field>
+            <field name="valeur_achat">280000</field>
+            <field name="date_fin_garantie">2025-09-01</field>
+            <field name="fournisseur_id" ref="partner_hp_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Hall d'accueil</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 4. Switch réseau -->
+        <record id="eq_switch_cisco_01" model="it.equipement">
+            <field name="name">Cisco Catalyst 2960 - Switch principal</field>
+            <field name="categorie">reseau</field>
+            <field name="marque">Cisco</field>
+            <field name="modele">Catalyst 2960-X</field>
+            <field name="numero_serie">SN-CISCO-SW-001</field>
+            <field name="adresse_ip">192.168.1.1</field>
+            <field name="date_achat">2021-01-10</field>
+            <field name="valeur_achat">1200000</field>
+            <field name="date_fin_garantie">2024-01-10</field>
+            <field name="fournisseur_id" ref="partner_cisco_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Baie réseau - RDC</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 5. Poste en maintenance -->
+        <record id="eq_dell_latitude_02" model="it.equipement">
+            <field name="name">Dell Latitude 5420 - Comptabilité</field>
+            <field name="categorie">poste</field>
+            <field name="marque">Dell</field>
+            <field name="modele">Latitude 5420</field>
+            <field name="numero_serie">SN-DELL-002</field>
+            <field name="processeur">Intel Core i5-1135G7</field>
+            <field name="ram">8 Go DDR4</field>
+            <field name="stockage">256 Go SSD</field>
+            <field name="systeme_exploitation">Windows 10 Pro</field>
+            <field name="date_achat">2022-11-20</field>
+            <field name="valeur_achat">620000</field>
+            <field name="date_fin_garantie">2025-11-20</field>
+            <field name="fournisseur_id" ref="partner_dell_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Département Comptabilité</field>
+            <field name="state">maintenance</field>
+        </record>
+
+        <!-- 6. Poste retiré -->
+        <record id="eq_vieux_pc_01" model="it.equipement">
+            <field name="name">HP EliteBook 840 G3 - Retiré</field>
+            <field name="categorie">poste</field>
+            <field name="marque">HP</field>
+            <field name="modele">EliteBook 840 G3</field>
+            <field name="numero_serie">SN-HP-OLD-001</field>
+            <field name="date_achat">2018-04-01</field>
+            <field name="valeur_achat">450000</field>
+            <field name="date_fin_garantie">2021-04-01</field>
+            <field name="fournisseur_id" ref="partner_hp_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="state">retire</field>
+        </record>
+
+        <!-- 7. Poste site Bouaké -->
+        <record id="eq_dell_bouake_01" model="it.equipement">
+            <field name="name">Dell OptiPlex 7090 - Direction Bouaké</field>
+            <field name="categorie">poste</field>
+            <field name="marque">Dell</field>
+            <field name="modele">OptiPlex 7090</field>
+            <field name="numero_serie">SN-DELL-BKE-001</field>
+            <field name="processeur">Intel Core i7-10700</field>
+            <field name="ram">16 Go DDR4</field>
+            <field name="stockage">512 Go SSD</field>
+            <field name="date_achat">2024-01-10</field>
+            <field name="valeur_achat">720000</field>
+            <field name="date_fin_garantie">2027-01-10</field>
+            <field name="fournisseur_id" ref="partner_dell_ci"/>
+            <field name="site">bouake</field>
+            <field name="localisation">Bureau Direction</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 8. Téléphone IP -->
+        <record id="eq_telephone_cisco_01" model="it.equipement">
+            <field name="name">Cisco IP Phone 8841 - Direction</field>
+            <field name="categorie">telephone</field>
+            <field name="marque">Cisco</field>
+            <field name="modele">IP Phone 8841</field>
+            <field name="numero_serie">SN-CISCO-TEL-001</field>
+            <field name="adresse_ip">192.168.1.50</field>
+            <field name="date_achat">2023-05-15</field>
+            <field name="valeur_achat">150000</field>
+            <field name="date_fin_garantie">2026-05-15</field>
+            <field name="fournisseur_id" ref="partner_cisco_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Bureau Directeur Général</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 9. Routeur -->
+        <record id="eq_routeur_cisco_01" model="it.equipement">
+            <field name="name">Cisco ISR 4331 - Routeur principal</field>
+            <field name="categorie">reseau</field>
+            <field name="marque">Cisco</field>
+            <field name="modele">ISR 4331</field>
+            <field name="numero_serie">SN-CISCO-RT-001</field>
+            <field name="adresse_ip">192.168.0.1</field>
+            <field name="date_achat">2022-03-01</field>
+            <field name="valeur_achat">2100000</field>
+            <field name="date_fin_garantie">2025-03-01</field>
+            <field name="fournisseur_id" ref="partner_cisco_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="localisation">Salle serveurs - RDC</field>
+            <field name="state">affecte</field>
+        </record>
+
+        <!-- 10. Poste brouillon (jamais affecté) -->
+        <record id="eq_nouveau_poste_01" model="it.equipement">
+            <field name="name">Dell Latitude 5540 - Stock</field>
+            <field name="categorie">poste</field>
+            <field name="marque">Dell</field>
+            <field name="modele">Latitude 5540</field>
+            <field name="numero_serie">SN-DELL-NEW-001</field>
+            <field name="processeur">Intel Core i7-1365U</field>
+            <field name="ram">16 Go DDR5</field>
+            <field name="stockage">512 Go NVMe SSD</field>
+            <field name="date_achat">2024-05-01</field>
+            <field name="valeur_achat">950000</field>
+            <field name="date_fin_garantie">2027-05-01</field>
+            <field name="fournisseur_id" ref="partner_dell_ci"/>
+            <field name="site">abidjan1</field>
+            <field name="state">brouillon</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             INTERVENTIONS (5 interventions)
+        ══════════════════════════════════════════════════════ -->
+
+        <record id="int_dell_latitude_02_01" model="it.intervention">
+            <field name="name">Remplacement disque dur défaillant</field>
+            <field name="equipement_id" ref="eq_dell_latitude_02"/>
+            <field name="type_intervention">corrective</field>
+            <field name="date_debut">2026-06-18 08:00:00</field>
+            <field name="date_fin">2026-06-18 12:00:00</field>
+            <field name="description">
+                Disque dur présentant des secteurs défectueux.
+                L'utilisateur signale des lenteurs et des erreurs.
+            </field>
+            <field name="rapport">
+                Diagnostic : disque SATA en fin de vie.
+                Remplacement par un SSD 256 Go.
+                Migration des données effectuée avec succès.
+            </field>
+            <field name="cout">45000</field>
+            <field name="state">termine</field>
+        </record>
+
+        <record id="int_serveur_hp_01" model="it.intervention">
+            <field name="name">Maintenance préventive serveur principal</field>
+            <field name="equipement_id" ref="eq_serveur_hp_01"/>
+            <field name="type_intervention">preventive</field>
+            <field name="date_debut">2026-06-20 22:00:00</field>
+            <field name="date_fin">2026-06-21 02:00:00</field>
+            <field name="description">
+                Maintenance préventive planifiée :
+                nettoyage, vérification RAID, mises à jour OS.
+            </field>
+            <field name="rapport">
+                Nettoyage des ventilateurs effectué.
+                Vérification intégrité RAID OK.
+                Mise à jour Ubuntu 22.04.4 LTS appliquée.
+                Redémarrage propre effectué.
+            </field>
+            <field name="cout">0</field>
+            <field name="state">termine</field>
+        </record>
+
+        <record id="int_switch_cisco_01" model="it.intervention">
+            <field name="name">Mise à jour firmware switch</field>
+            <field name="equipement_id" ref="eq_switch_cisco_01"/>
+            <field name="type_intervention">preventive</field>
+            <field name="date_debut">2026-06-21 06:00:00</field>
+            <field name="description">
+                Mise à jour du firmware Cisco IOS
+                vers la dernière version stable.
+            </field>
+            <field name="cout">0</field>
+            <field name="state">planifie</field>
+        </record>
+
+        <record id="int_imprimante_hp_01" model="it.intervention">
+            <field name="name">Bourrage papier récurrent - Accueil</field>
+            <field name="equipement_id" ref="eq_imprimante_hp_01"/>
+            <field name="type_intervention">corrective</field>
+            <field name="date_debut">2026-06-15 10:00:00</field>
+            <field name="date_fin">2026-06-15 11:00:00</field>
+            <field name="description">
+                Bourrages papier fréquents signalés
+                par le personnel d'accueil.
+            </field>
+            <field name="rapport">
+                Nettoyage du circuit papier.
+                Remplacement des rouleaux d'entraînement.
+                Test d'impression : OK.
+            </field>
+            <field name="cout">15000</field>
+            <field name="state">termine</field>
+        </record>
+
+        <record id="int_routeur_cisco_01" model="it.intervention">
+            <field name="name">Coupure réseau - diagnostic routeur</field>
+            <field name="equipement_id" ref="eq_routeur_cisco_01"/>
+            <field name="type_intervention">corrective</field>
+            <field name="date_debut">2026-06-10 09:30:00</field>
+            <field name="date_fin">2026-06-10 11:00:00</field>
+            <field name="description">
+                Coupure totale d'internet signalée à 9h30.
+                Tous les postes sont affectés.
+            </field>
+            <field name="rapport">
+                Cause identifiée : redémarrage intempestif
+                du routeur suite à une mise à jour automatique.
+                Configuration restaurée depuis la sauvegarde.
+                Désactivation des mises à jour automatiques.
+            </field>
+            <field name="cout">0</field>
+            <field name="state">termine</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             CONTRATS (3 contrats)
+        ══════════════════════════════════════════════════════ -->
+
+        <record id="contrat_dell_maintenance" model="it.contrat">
+            <field name="name">Contrat maintenance matériel Dell</field>
+            <field name="type_contrat">maintenance</field>
+            <field name="fournisseur_id" ref="partner_dell_ci"/>
+            <field name="date_debut">2024-01-01</field>
+            <field name="date_fin">2026-12-31</field>
+            <field name="montant">1200000</field>
+            <field name="equipement_ids" eval="[
+                (4, ref('eq_dell_latitude_01')),
+                (4, ref('eq_dell_latitude_02')),
+                (4, ref('eq_dell_bouake_01')),
+                (4, ref('eq_nouveau_poste_01')),
+            ]"/>
+            <field name="notes">
+                Contrat couvrant tous les postes Dell.
+                Intervention sous 24h ouvrées.
+            </field>
+            <field name="state">actif</field>
+        </record>
+
+        <record id="contrat_cisco_support" model="it.contrat">
+            <field name="name">Support technique équipements Cisco</field>
+            <field name="type_contrat">support</field>
+            <field name="fournisseur_id" ref="partner_cisco_ci"/>
+            <field name="date_debut">2023-07-01</field>
+            <field name="date_fin">2026-06-30</field>
+            <field name="montant">800000</field>
+            <field name="equipement_ids" eval="[
+                (4, ref('eq_switch_cisco_01')),
+                (4, ref('eq_routeur_cisco_01')),
+                (4, ref('eq_telephone_cisco_01')),
+            ]"/>
+            <field name="state">actif</field>
+        </record>
+
+        <record id="contrat_hp_expire" model="it.contrat">
+            <field name="name">Maintenance serveur HP - Expiré</field>
+            <field name="type_contrat">maintenance</field>
+            <field name="fournisseur_id" ref="partner_hp_ci"/>
+            <field name="date_debut">2022-06-01</field>
+            <field name="date_fin">2025-05-31</field>
+            <field name="montant">950000</field>
+            <field name="equipement_ids" eval="[
+                (4, ref('eq_serveur_hp_01')),
+                (4, ref('eq_imprimante_hp_01')),
+            ]"/>
+            <field name="notes">
+                Contrat expiré — à renouveler.
+            </field>
+            <field name="state">expire</field>
+        </record>
+
+    </data>
+</odoo>

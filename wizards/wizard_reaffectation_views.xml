@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_wizard_reaffectation_form" model="ir.ui.view">
+            <field name="name">wizard.reaffectation.form</field>
+            <field name="model">wizard.reaffectation</field>
+            <field name="arch" type="xml">
+                <form string="Réaffecter l'équipement">
+                    <sheet>
+                        <group string="Équipement">
+                            <field name="equipement_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <group string="Affectation actuelle">
+                                <field name="employee_actuel_id" readonly="1"/>
+                                <field name="department_actuel_id" readonly="1"/>
+                            </group>
+                            <group string="Nouvelle affectation">
+                                <field name="employee_id"/>
+                                <field name="department_id"/>
+                                <field name="date_debut"/>
+                            </group>
+                        </group>
+                        <group string="Motif de réaffectation">
+                            <field name="motif" nolabel="1"
+                                   placeholder="Motif obligatoire (min. 10 caractères)…"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirmer"
+                                string="Confirmer la réaffectation"
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Annuler"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

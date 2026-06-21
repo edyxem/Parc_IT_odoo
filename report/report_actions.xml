@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             ACTION : Fiche équipement
+        ══════════════════════════════════════════════════════ -->
+        <record id="action_report_fiche_equipement"
+                model="ir.actions.report">
+            <field name="name">Fiche équipement</field>
+            <field name="model">it.equipement</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">
+                it_parc.report_fiche_equipement_template
+            </field>
+            <field name="report_file">
+                it_parc/report/report_fiche_equipement
+            </field>
+            <field name="binding_model_id"
+                   ref="model_it_equipement"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id"
+                   ref="base.paperformat_euro"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             ACTION : Inventaire complet
+        ══════════════════════════════════════════════════════ -->
+        <record id="action_report_inventaire"
+                model="ir.actions.report">
+            <field name="name">Inventaire du parc informatique</field>
+            <field name="model">it.equipement</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">
+                it_parc.report_inventaire_template
+            </field>
+            <field name="report_file">
+                it_parc/report/report_inventaire
+            </field>
+            <field name="binding_model_id"
+                   ref="model_it_equipement"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id"
+                   ref="base.paperformat_euro"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             ACTION : Historique maintenances
+        ══════════════════════════════════════════════════════ -->
+        <record id="action_report_maintenance"
+                model="ir.actions.report">
+            <field name="name">Historique des maintenances</field>
+            <field name="model">it.intervention</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">
+                it_parc.report_maintenance_template
+            </field>
+            <field name="report_file">
+                it_parc/report/report_maintenance
+            </field>
+            <field name="binding_model_id"
+                   ref="model_it_intervention"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id"
+                   ref="base.paperformat_euro"/>
+        </record>
+
+    </data>
+</odoo>

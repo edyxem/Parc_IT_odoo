@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="it_parc.ItParcDashboard">
+        <div class="it-parc-dashboard o_action">
+
+            <div class="d-flex justify-content-between
+                        align-items-center px-4 py-3
+                        border-bottom bg-white">
+                <div>
+                    <h3 class="mb-0">
+                        IT Parc — Tableau de bord
+                    </h3>
+                    <small class="text-muted" t-if="state.last_updated">
+                        Mis à jour à <t t-esc="state.last_updated"/>
+                    </small>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm"
+                        t-on-click="onRefresh">
+                    <i class="fa fa-refresh me-1"/>
+                    Actualiser
+                </button>
+            </div>
+
+            <div t-if="state.loading"
+                 class="d-flex justify-content-center align-items-center"
+                 style="min-height: 400px;">
+                <div class="text-center text-muted">
+                    <i class="fa fa-spinner fa-spin fa-2x mb-3"/>
+                    <p>Chargement des données…</p>
+                </div>
+            </div>
+
+            <div t-else="" class="p-4">
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-3">
+                        <div class="card h-100 border-0 shadow-sm it-kpi-card it-kpi-blue"
+                             t-on-click="onClickTotal"
+                             style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <div class="it-kpi-icon">
+                                    <i class="fa fa-desktop"/>
+                                </div>
+                                <h2 class="it-kpi-value">
+                                    <t t-esc="state.kpis.total_equipements"/>
+                                </h2>
+                                <p class="it-kpi-label mb-0">
+                                    Équipements actifs
+                                </p>
+                                <small class="text-muted">
+                                    <t t-esc="state.kpis.brouillon"/> en stock /
+                                    <t t-esc="state.kpis.retire"/> retirés
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card h-100 border-0 shadow-sm it-kpi-card it-kpi-orange"
+                             t-on-click="onClickMaintenance"
+                             style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <div class="it-kpi-icon">
+                                    <i class="fa fa-wrench"/>
+                                </div>
+                                <h2 class="it-kpi-value">
+                                    <t t-esc="state.kpis.en_maintenance"/>
+                                </h2>
+                                <p class="it-kpi-label mb-0">
+                                    En maintenance
+                                </p>
+                                <small class="text-muted">
+                                    équipements bloqués
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card h-100 border-0 shadow-sm it-kpi-card it-kpi-red"
+                             t-on-click="onClickAlertes"
+                             style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <div class="it-kpi-icon">
+                                    <i class="fa fa-bell"/>
+                                </div>
+                                <h2 class="it-kpi-value">
+                                    <t t-esc="state.kpis.alertes_actives"/>
+                                </h2>
+                                <p class="it-kpi-label mb-0">
+                                    Alertes actives
+                                </p>
+                                <small class="text-muted">
+                                    garanties et contrats
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card h-100 border-0 shadow-sm it-kpi-card it-kpi-green"
+                             t-on-click="onClickCout"
+                             style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <div class="it-kpi-icon">
+                                    <i class="fa fa-money"/>
+                                </div>
+                                <h2 class="it-kpi-value" style="font-size: 1.4rem;">
+                                    <t t-esc="formatMoney(state.kpis.cout_mois)"/>
+                                </h2>
+                                <p class="it-kpi-label mb-0">
+                                    Coût maintenance
+                                </p>
+                                <small class="text-muted">
+                                    mois en cours
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-7">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white border-bottom fw-bold">
+                                Interventions par mois (6 derniers mois)
+                            </div>
+                            <div class="card-body">
+
+                                <!-- Légende -->
+                                <div class="d-flex justify-content-center
+                                            gap-4 mb-2">
+                                    <span class="small">
+                                        <span style="display:inline-block;
+                                                     width:12px; height:12px;
+                                                     background:#DC3545;
+                                                     border-radius:2px;
+                                                     vertical-align:middle;
+                                                     margin-right:6px;"/>
+                                        Correctives
+                                    </span>
+                                    <span class="small">
+                                        <span style="display:inline-block;
+                                                     width:12px; height:12px;
+                                                     background:#198754;
+                                                     border-radius:2px;
+                                                     vertical-align:middle;
+                                                     margin-right:6px;"/>
+                                        Préventives
+                                    </span>
+                                </div>
+
+                                <!-- Graphique SVG natif -->
+                                <svg t-att-viewBox="'0 0 ' + chartConfig.width + ' ' + chartConfig.height"
+                                     width="100%"
+                                     style="max-height: 240px;">
+
+                                    <!-- Lignes horizontales (grille + ticks Y) -->
+                                    <t t-foreach="chartConfig.yTicks"
+                                       t-as="tick"
+                                       t-key="tick.key">
+                                        <line t-att-x1="tick.lineX1"
+                                              t-att-y1="tick.y"
+                                              t-att-x2="tick.lineX2"
+                                              t-att-y2="tick.y"
+                                              stroke="#E0E0E0"
+                                              stroke-width="1"
+                                              stroke-dasharray="2,2"/>
+                                        <text t-att-x="chartConfig.padding.left - 8"
+                                              t-att-y="tick.y + 4"
+                                              text-anchor="end"
+                                              font-size="11"
+                                              fill="#6c757d">
+                                            <t t-esc="tick.value"/>
+                                        </text>
+                                    </t>
+
+                                    <!-- Axe X (ligne horizontale) -->
+                                    <line t-att-x1="chartConfig.padding.left"
+                                          t-att-y1="chartConfig.axisXY"
+                                          t-att-x2="chartConfig.width - chartConfig.padding.right"
+                                          t-att-y2="chartConfig.axisXY"
+                                          stroke="#888"
+                                          stroke-width="1"/>
+
+                                    <!-- Barres -->
+                                    <t t-foreach="chartConfig.bars"
+                                       t-as="bar"
+                                       t-key="bar.key">
+                                        <rect t-att-x="bar.x"
+                                              t-att-y="bar.y"
+                                              t-att-width="bar.width"
+                                              t-att-height="bar.height"
+                                              t-att-fill="bar.color"
+                                              rx="2">
+                                            <title>
+                                                <t t-esc="bar.value"/>
+                                            </title>
+                                        </rect>
+                                        <!-- Valeur au-dessus de la barre si > 0 -->
+                                        <text t-if="bar.value &gt; 0"
+                                              t-att-x="bar.labelX"
+                                              t-att-y="bar.labelY"
+                                              text-anchor="middle"
+                                              font-size="10"
+                                              font-weight="500"
+                                              fill="#333">
+                                            <t t-esc="bar.value"/>
+                                        </text>
+                                    </t>
+
+                                    <!-- Labels axe X (mois) -->
+                                    <t t-foreach="chartConfig.xLabels"
+                                       t-as="label"
+                                       t-key="label.key">
+                                        <text t-att-x="label.x"
+                                              t-att-y="label.y"
+                                              text-anchor="middle"
+                                              font-size="11"
+                                              fill="#6c757d">
+                                            <t t-esc="label.text"/>
+                                        </text>
+                                    </t>
+
+                                </svg>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white border-bottom fw-bold">
+                                Alertes urgentes
+                                <span class="badge bg-danger ms-2"
+                                      t-if="state.alertes_urgentes.length > 0">
+                                    <t t-esc="state.alertes_urgentes.length"/>
+                                </span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div t-if="!state.alertes_urgentes.length"
+                                     class="text-center text-muted p-4">
+                                    <i class="fa fa-check-circle fa-2x text-success mb-2"/>
+                                    <p class="mb-0">
+                                        Aucune alerte urgente
+                                    </p>
+                                </div>
+                                <ul t-else="" class="list-group list-group-flush">
+                                    <t t-foreach="state.alertes_urgentes"
+                                       t-as="alerte"
+                                       t-key="alerte.id">
+                                        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
+                                            t-on-click="() => onClickAlerte(alerte.id)"
+                                            style="cursor: pointer;">
+                                            <div class="me-2">
+                                                <span class="ms-1 small fw-bold"
+                                                      t-att-class="urgenceClass(alerte.urgence)">
+                                                    <t t-esc="alerte.name"/>
+                                                </span>
+                                                <br/>
+                                                <small class="text-muted">
+                                                    <t t-esc="alerte.source"/>
+                                                </small>
+                                            </div>
+                                            <span t-attf-class="badge rounded-pill #{alerte.jours_avant &lt;= 7 ? 'bg-danger' : alerte.jours_avant &lt;= 30 ? 'bg-warning text-dark' : 'bg-success'}">
+                                                <t t-esc="alerte.jours_avant"/>j
+                                            </span>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom fw-bold">
+                                Répartition par catégorie
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Catégorie</th>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center">Affectés</th>
+                                            <th class="text-center">Maintenance</th>
+                                            <th class="text-center">Retirés</th>
+                                            <th class="text-end">Valeur (FCFA)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.repartition"
+                                           t-as="cat"
+                                           t-key="cat.code">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="cat.label"/>
+                                                </td>
+                                                <td class="text-center fw-bold">
+                                                    <t t-esc="cat.total"/>
+                                                </td>
+                                                <td class="text-center text-success">
+                                                    <t t-esc="cat.affecte"/>
+                                                </td>
+                                                <td class="text-center text-warning">
+                                                    <t t-esc="cat.maintenance"/>
+                                                </td>
+                                                <td class="text-center text-muted">
+                                                    <t t-esc="cat.retire"/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-esc="formatMoney(cat.valeur)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+</templates>

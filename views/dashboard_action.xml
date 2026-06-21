@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action client dashboard OWL -->
+        <record id="action_it_dashboard" model="ir.actions.client">
+            <field name="name">Tableau de bord IT Parc</field>
+            <field name="tag">it_parc_dashboard</field>
+        </record>
+    </data>
+</odoo>

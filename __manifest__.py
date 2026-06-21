@@ -18,31 +18,28 @@
     'website': 'https://www.techpark-ci.com',
     'license': 'LGPL-3',
 
-    # ── Dépendances ──────────────────────────────────────────
     'depends': [
-        'base',        # res.users, res.company
-        'mail',        # mail.thread, mail.activity.mixin
-        'hr',          # hr.employee, hr.department
-        'contacts',    # res.partner (fournisseurs)
-        'stock',       # product.template (optionnel)
-        'purchase',    # contrats fournisseurs
-        'account',     # coûts, valorisation
-        'maintenance', # interventions
-        'web',         # composants OWL, RPC
+        'base',
+        'mail',
+        'hr',
+        'contacts',
+        'stock',
+        'purchase',
+        'account',
+        'maintenance',
+        'web',
     ],
 
-    # ── Données chargées à l'installation ────────────────────
     'data': [
-        # Sécurité en premier (obligatoire)
         'security/security_groups.xml',
         'security/ir.model.access.csv',
         'security/ir_rules.xml',
 
-        # Données de base
         'data/ir_sequence.xml',
         'data/ir_cron.xml',
 
-        # Vues
+        'views/dashboard_action.xml',
+
         'views/equipement_views.xml',
         'views/affectation_views.xml',
         'views/intervention_views.xml',
@@ -50,25 +47,21 @@
         'views/alerte_views.xml',
         'views/menus.xml',
 
-        # Wizards
         'wizards/wizard_reaffectation_views.xml',
         'wizards/wizard_import_csv_views.xml',
         'wizards/wizard_scan_alerte_views.xml',
         'wizards/wizard_renouvellement_views.xml',
 
-        # Rapports PDF
         'report/report_actions.xml',
-        'report/report_equipement.xml',
+        'report/report_fiche_equipement.xml',
         'report/report_inventaire.xml',
         'report/report_maintenance.xml',
     ],
 
-    # ── Données de démo ──────────────────────────────────────
     'demo': [
         'data/it_parc_demo.xml',
     ],
 
-    # ── Assets front-end (dashboard OWL) ─────────────────────
     'assets': {
         'web.assets_backend': [
             'it_parc/static/src/components/ItParcDashboard.js',

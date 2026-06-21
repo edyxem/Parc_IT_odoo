@@ -187,3 +187,213 @@ class ItIntervention(models.Model):
                     'pas être annulée.'
                 )
         self.write({'state': 'annule'})
+    
+    # ── Export Excel : Coûts de maintenance ───────────────────────
+def action_export_couts_excel(self):
+    import io
+    import base64
+    import xlsxwriter
+    from datetime import datetime
+    from collections import defaultdict
+
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook({'in_memory': True})
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+    # ── Formats ────────────────────────────────────────────────
+    fmt_titre = workbook.add_format({
+        'bold': True, 'font_size': 14,
+        'font_color': '#FFFFFF', 'bg_color': '#1F4E79',
+        'align': 'center', 'valign': 'vcenter',
+    })
+    fmt_header = workbook.add_format({
+        'bold': True, 'font_color': '#FFFFFF',
+        'bg_color': '#2E75B6', 'border': 1,
+        'align': 'center', 'valign': 'vcenter',
+        'text_wrap': True,
+    })
+    fmt_cell = workbook.add_format({
+        'font_size': 9, 'border': 1, 'valign': 'vcenter',
+    })
+    fmt_cell_center = workbook.add_format({
+        'font_size': 9, 'border': 1,
+        'align': 'center', 'valign': 'vcenter',
+    })
+    fmt_money = workbook.add_format({
+        'font_size': 9, 'border': 1,
+        'num_format': '#,##0', 'align': 'right',
+    })
+    fmt_total = workbook.add_format({
+        'bold': True, 'bg_color': '#D6E4F0',
+        'border': 1, 'num_format': '#,##0',
+        'align': 'right',
+    })
+    fmt_mois_header = workbook.add_format({
+        'bold': True, 'bg_color': '#BDD7EE',
+        'border': 1, 'align': 'center',
+    })
+
+    # ── Onglet 1 : Détail interventions ───────────────────────
+    ws = workbook.add_worksheet('Détail interventions')
+    ws.freeze_panes(2, 0)
+    ws.set_zoom(85)
+
+    ws.merge_range(
+        'A1:J1',
+        f'Coûts de maintenance — '
+        f'{datetime.now().strftime("%d/%m/%Y %H:%M")}',
+        fmt_titre
+    )
+    ws.set_row(0, 24)
+
+    headers = [
+        'Référence', 'Titre', 'Équipement',
+        'Type', 'Technicien', 'Date début',
+        'Date fin', 'Durée (h)', 'État', 'Coût (FCFA)',
+    ]
+    col_widths = [14, 35, 30, 14, 22, 16, 16, 10, 12, 16]
+    for col, (h, w) in enumerate(zip(headers, col_widths)):
+        ws.write(1, col, h, fmt_header)
+        ws.set_column(col, col, w)
+    ws.set_row(1, 28)
+
+    interventions = self.sorted('date_debut', reverse=True)
+    for row, inv in enumerate(interventions, start=2):
+        ws.write(row, 0, inv.reference, fmt_cell_center)
+        ws.write(row, 1, inv.name, fmt_cell)
+        ws.write(
+            row, 2, inv.equipement_id.name, fmt_cell)
+        ws.write(
+            row, 3, inv.type_intervention, fmt_cell_center)
+        ws.write(
+            row, 4,
+            inv.technicien_id.name
+            if inv.technicien_id else '—',
+            fmt_cell
+        )
+        if inv.date_debut:
+            ws.write(
+                row, 5,
+                inv.date_debut.strftime('%d/%m/%Y %H:%M'),
+                fmt_cell_center
+            )
+        if inv.date_fin:
+            ws.write(
+                row, 6,
+                inv.date_fin.strftime('%d/%m/%Y %H:%M'),
+                fmt_cell_center
+            )
+        else:
+            ws.write(row, 6, '—', fmt_cell_center)
+        ws.write(
+            row, 7,
+            round(inv.duree_heures, 1),
+            fmt_cell_center
+        )
+        ws.write(row, 8, inv.state, fmt_cell_center)
+        ws.write(row, 9, inv.cout, fmt_money)
+
+    last = 2 + len(interventions)
+    ws.write(last, 7, 'TOTAL', fmt_total)
+    ws.write(
+        last, 8,
+        round(sum(interventions.mapped('duree_heures')), 1),
+        fmt_total
+    )
+    ws.write(
+        last, 9,
+        sum(interventions.mapped('cout')),
+        fmt_total
+    )
+
+    # ── Onglet 2 : Tableau croisé par mois ────────────────────
+    ws2 = workbook.add_worksheet('Coûts par mois')
+    ws2.set_zoom(85)
+
+    ws2.merge_range(
+        'A1:F1',
+        'Tableau des coûts de maintenance par mois',
+        fmt_titre
+    )
+    ws2.set_row(0, 24)
+
+    # Construire le tableau croisé mois x équipement
+    data_mois = defaultdict(
+        lambda: defaultdict(float))
+    mois_set = set()
+    eq_set = set()
+
+    for inv in interventions:
+        if inv.date_debut and inv.cout:
+            mois = inv.date_debut.strftime('%Y-%m')
+            eq_name = inv.equipement_id.name
+            data_mois[mois][eq_name] += inv.cout
+            mois_set.add(mois)
+            eq_set.add(eq_name)
+
+    mois_list = sorted(mois_set)
+    eq_list = sorted(eq_set)
+
+    # En-têtes
+    ws2.write(1, 0, 'Équipement', fmt_header)
+    ws2.set_column(0, 0, 35)
+    for col, mois in enumerate(mois_list, start=1):
+        # Formater le mois en "Jan 2026"
+        from datetime import datetime as dt
+        mois_fmt = dt.strptime(mois, '%Y-%m').strftime('%b %Y')
+        ws2.write(1, col, mois_fmt, fmt_mois_header)
+        ws2.set_column(col, col, 14)
+    ws2.write(
+        1, len(mois_list) + 1, 'TOTAL', fmt_header)
+    ws2.set_row(1, 28)
+
+    # Données
+    for row, eq_name in enumerate(eq_list, start=2):
+        ws2.write(row, 0, eq_name, fmt_cell)
+        total_eq = 0
+        for col, mois in enumerate(mois_list, start=1):
+            val = data_mois[mois].get(eq_name, 0)
+            total_eq += val
+            if val:
+                ws2.write(row, col, val, fmt_money)
+            else:
+                ws2.write(row, col, '—', fmt_cell_center)
+        ws2.write(
+            row, len(mois_list) + 1, total_eq, fmt_total)
+
+    # Ligne totaux par mois
+    last2 = 2 + len(eq_list)
+    ws2.write(last2, 0, 'TOTAL', fmt_total)
+    for col, mois in enumerate(mois_list, start=1):
+        ws2.write(
+            last2, col,
+            sum(data_mois[mois].values()),
+            fmt_total
+        )
+    ws2.write(
+        last2, len(mois_list) + 1,
+        sum(inv.cout for inv in interventions),
+        fmt_total
+    )
+
+    workbook.close()
+    output.seek(0)
+
+    nom_fichier = (
+        f'couts_maintenance_'
+        f'{datetime.now().strftime("%Y%m%d_%H%M")}.xlsx'
+    )
+    attachment = self.env['ir.attachment'].create({
+        'name': nom_fichier,
+        'type': 'binary',
+        'datas': base64.b64encode(output.read()),
+        'mimetype': (
+            'application/vnd.openxmlformats-'
+            'officedocument.spreadsheetml.sheet'
+        ),
+    })
+    return {
+        'type': 'ir.actions.act_url',
+        'url': f'/web/content/{attachment.id}?download=true',
+        'target': 'self',
+    }

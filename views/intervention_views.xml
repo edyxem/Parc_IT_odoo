@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE LISTE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_intervention_list" model="ir.ui.view">
+            <field name="name">it.intervention.list</field>
+            <field name="model">it.intervention</field>
+            <field name="arch" type="xml">
+                <list string="Interventions"
+                      decoration-success="state == 'termine'"
+                      decoration-warning="state == 'en_cours'"
+                      decoration-info="state == 'planifie'"
+                      decoration-danger="state == 'annule'">
+                    <field name="reference"/>
+                    <field name="name"/>
+                    <field name="equipement_id"/>
+                    <field name="type_intervention"
+                           widget="badge"
+                           decoration-danger="type_intervention == 'corrective'"
+                           decoration-success="type_intervention == 'preventive'"/>
+                    <field name="technicien_id"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin" optional="show"/>
+                    <field name="duree_heures"
+                           string="Durée (h)"
+                           optional="show"/>
+                    <field name="cout"
+                           string="Coût (FCFA)"
+                           optional="show"/>
+                    <field name="state"
+                           widget="badge"
+                           decoration-success="state == 'termine'"
+                           decoration-warning="state == 'en_cours'"
+                           decoration-info="state == 'planifie'"
+                           decoration-danger="state == 'annule'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE FORMULAIRE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_intervention_form" model="ir.ui.view">
+            <field name="name">it.intervention.form</field>
+            <field name="model">it.intervention</field>
+            <field name="arch" type="xml">
+                <form string="Intervention">
+                    <header>
+                        <button name="action_demarrer"
+                                string="Démarrer"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'planifie'"/>
+                        <button name="action_terminer"
+                                string="Terminer"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'en_cours'"/>
+                        <button name="action_annuler"
+                                string="Annuler"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state in ('termine', 'annule')"
+                                confirm="Confirmer l'annulation de cette intervention ?"/>
+                        <button name="action_export_couts_excel"
+                                string="Exporter Excel"
+                                type="object"
+                                class="btn-secondary"/>
+                        <field name="state"
+                               widget="statusbar"
+                               statusbar_visible="planifie,en_cours,termine"/>
+                    </header>
+
+                    <sheet>
+                        <!-- Alerte rapport manquant -->
+                        <div class="alert alert-warning"
+                             role="alert"
+                             invisible="state != 'en_cours' or rapport">
+                            <strong>⚠ Rapport manquant</strong> —
+                            Renseignez le rapport avant de terminer
+                            l'intervention.
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="reference"
+                                   class="text-muted small"/>
+                            <h4>
+                                <field name="reference" readonly="1"/>
+                            </h4>
+                            <h1>
+                                <field name="name"
+                                       placeholder="Titre de l'intervention…"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Informations">
+                                <field name="equipement_id"/>
+                                <field name="type_intervention"
+                                       widget="radio"/>
+                                <field name="technicien_id"/>
+                            </group>
+                            <group string="Dates et durée">
+                                <field name="date_debut"/>
+                                <field name="date_fin"
+                                       invisible="state == 'planifie'"/>
+                                <field name="duree_heures"
+                                       readonly="1"
+                                       string="Durée calculée (h)"
+                                       invisible="state == 'planifie'"/>
+                                <field name="cout"
+                                       string="Coût (FCFA)"/>
+                            </group>
+                        </group>
+
+                        <group string="Description du problème">
+                            <field name="description"
+                                   nolabel="1"
+                                   placeholder="Décrivez le problème constaté…"/>
+                        </group>
+
+                        <group string="Rapport d'intervention"
+                               invisible="state == 'planifie'">
+                            <field name="rapport"
+                                   nolabel="1"
+                                   placeholder="Décrivez les actions effectuées, pièces remplacées, résultat…"/>
+                        </group>
+
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE CALENDRIER
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_intervention_calendar" model="ir.ui.view">
+            <field name="name">it.intervention.calendar</field>
+            <field name="model">it.intervention</field>
+            <field name="arch" type="xml">
+                <calendar string="Interventions"
+                          date_start="date_debut"
+                          date_stop="date_fin"
+                          color="type_intervention"
+                          mode="month"
+                          quick_add="False">
+                    <field name="name"/>
+                    <field name="equipement_id"/>
+                    <field name="technicien_id"/>
+                    <field name="type_intervention"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE RECHERCHE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_intervention_search" model="ir.ui.view">
+            <field name="name">it.intervention.search</field>
+            <field name="model">it.intervention</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher une intervention">
+                    <field name="name"
+                           filter_domain="[
+                               '|',
+                               ('name', 'ilike', self),
+                               ('reference', 'ilike', self)
+                           ]"/>
+                    <field name="equipement_id"/>
+                    <field name="technicien_id"/>
+                    <separator/>
+                    <filter name="planifie"
+                            string="Planifiées"
+                            domain="[('state', '=', 'planifie')]"/>
+                    <filter name="en_cours"
+                            string="En cours"
+                            domain="[('state', '=', 'en_cours')]"/>
+                    <filter name="termine"
+                            string="Terminées"
+                            domain="[('state', '=', 'termine')]"/>
+                    <filter name="annule"
+                            string="Annulées"
+                            domain="[('state', '=', 'annule')]"/>
+                    <separator/>
+                    <filter name="corrective"
+                            string="Correctives"
+                            domain="[('type_intervention',
+                                      '=', 'corrective')]"/>
+                    <filter name="preventive"
+                            string="Préventives"
+                            domain="[('type_intervention',
+                                      '=', 'preventive')]"/>
+                    <separator/>
+                    <filter name="ce_mois"
+                            string="Ce mois"
+                            domain="[
+                                ('date_debut', '&gt;=',
+                                 (context_today()).strftime('%Y-%m-01'))
+                            ]"/>
+                    <group expand="0" string="Grouper par">
+                        <filter name="group_state"
+                                string="État"
+                                context="{'group_by': 'state'}"/>
+                        <filter name="group_type"
+                                string="Type"
+                                context="{'group_by': 'type_intervention'}"/>
+                        <filter name="group_equipement"
+                                string="Équipement"
+                                context="{'group_by': 'equipement_id'}"/>
+                        <filter name="group_technicien"
+                                string="Technicien"
+                                context="{'group_by': 'technicien_id'}"/>
+                        <filter name="group_mois"
+                                string="Mois"
+                                context="{'group_by': 'date_debut:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

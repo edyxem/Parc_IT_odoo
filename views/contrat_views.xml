@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE LISTE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_contrat_list" model="ir.ui.view">
+            <field name="name">it.contrat.list</field>
+            <field name="model">it.contrat</field>
+            <field name="arch" type="xml">
+                <list string="Contrats"
+                      decoration-danger="state == 'expire' or
+                                        (state == 'actif' and
+                                         jours_restants &lt;= 30)"
+                      decoration-warning="state == 'actif' and
+                                          jours_restants &gt; 30 and
+                                          jours_restants &lt;= 60"
+                      decoration-success="state == 'actif' and
+                                          jours_restants &gt; 60"
+                      decoration-muted="state in ('resilie', 'renouvele')">
+                    <field name="reference"/>
+                    <field name="name"/>
+                    <field name="type_contrat"
+                           widget="badge"/>
+                    <field name="fournisseur_id"/>
+                    <field name="date_debut" optional="show"/>
+                    <field name="date_fin"/>
+                    <field name="jours_restants"
+                           string="Jours restants"
+                           decoration-danger="jours_restants &lt;= 30"
+                           decoration-warning="jours_restants &gt; 30 and
+                                               jours_restants &lt;= 60"/>
+                    <field name="montant"
+                           string="Montant (FCFA)"
+                           optional="show"/>
+                    <field name="expire_bientot"
+                           widget="boolean"
+                           optional="hide"/>
+                    <field name="state"
+                           widget="badge"
+                           decoration-success="state == 'actif'"
+                           decoration-danger="state == 'expire'"
+                           decoration-secondary="state in ('resilie',
+                                                           'renouvele')"/>
+                    <button name="action_renouveler"
+                            string="Renouveler"
+                            type="object"
+                            icon="fa-refresh"
+                            invisible="state in ('resilie', 'renouvele')"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE FORMULAIRE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_contrat_form" model="ir.ui.view">
+            <field name="name">it.contrat.form</field>
+            <field name="model">it.contrat</field>
+            <field name="arch" type="xml">
+                <form string="Contrat fournisseur">
+                    <header>
+                        <button name="action_renouveler"
+                                string="Renouveler"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state in ('resilie',
+                                                     'renouvele')"/>
+                        <button name="action_resilier"
+                                string="Résilier"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state in ('resilie',
+                                                     'renouvele',
+                                                     'expire')"
+                                confirm="Confirmer la résiliation de ce contrat ?"/>
+                        <button name="action_export_contrats_excel"
+                                string="Exporter Excel"
+                                type="object"
+                                class="btn-secondary"/>
+                        <field name="state"
+                               widget="statusbar"
+                               statusbar_visible="actif,expire,renouvele,resilie"/>
+                    </header>
+
+                    <sheet>
+
+                        <!-- Alerte expiration imminente -->
+                        <div class="alert alert-danger"
+                             role="alert"
+                             invisible="not (state == 'actif' and
+                                            jours_restants &lt;= 30 and
+                                            jours_restants &gt;= 0)">
+                            <strong>⚠ Expiration imminente</strong> —
+                            Ce contrat expire dans
+                            <field name="jours_restants"
+                                   class="d-inline"/>
+                            jour(s). Pensez à le renouveler.
+                        </div>
+
+                        <div class="alert alert-warning"
+                             role="alert"
+                             invisible="not (state == 'actif' and
+                                            jours_restants &gt; 30 and
+                                            jours_restants &lt;= 60)">
+                            <strong>⚠ Attention</strong> —
+                            Ce contrat expire dans
+                            <field name="jours_restants"
+                                   class="d-inline"/>
+                            jour(s).
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="reference"
+                                   class="text-muted small"/>
+                            <h4>
+                                <field name="reference" readonly="1"/>
+                            </h4>
+                            <h1>
+                                <field name="name"
+                                       placeholder="Intitulé du contrat…"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Informations">
+                                <field name="type_contrat"/>
+                                <field name="fournisseur_id"/>
+                                <field name="montant"/>
+                            </group>
+                            <group string="Période">
+                                <field name="date_debut"/>
+                                <field name="date_fin"/>
+                                <field name="jours_restants"
+                                       readonly="1"
+                                       string="Jours restants"/>
+                                <field name="expire_bientot"
+                                       readonly="1"
+                                       widget="boolean"/>
+                            </group>
+                        </group>
+
+                        <group string="Équipements couverts">
+                            <field name="equipement_ids"
+                                   nolabel="1"
+                                   widget="many2many_tags"/>
+                        </group>
+
+                        <group string="Notes">
+                            <field name="notes"
+                                   nolabel="1"
+                                   placeholder="Conditions particulières, contacts, SLA…"/>
+                        </group>
+
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE RECHERCHE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_contrat_search" model="ir.ui.view">
+            <field name="name">it.contrat.search</field>
+            <field name="model">it.contrat</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher un contrat">
+                    <field name="name"
+                           filter_domain="[
+                               '|',
+                               ('name', 'ilike', self),
+                               ('reference', 'ilike', self)
+                           ]"/>
+                    <field name="fournisseur_id"/>
+                    <field name="type_contrat"/>
+                    <separator/>
+                    <filter name="actif"
+                            string="Actifs"
+                            domain="[('state', '=', 'actif')]"/>
+                    <filter name="expire"
+                            string="Expirés"
+                            domain="[('state', '=', 'expire')]"/>
+                    <filter name="resilie"
+                            string="Résiliés"
+                            domain="[('state', '=', 'resilie')]"/>
+                    <separator/>
+                    <filter name="expire_bientot"
+                            string="Expirant dans 60 jours"
+                            domain="[
+                                ('expire_bientot', '=', True),
+                                ('state', '=', 'actif')
+                            ]"/>
+                    <filter name="expire_critique"
+                            string="Expirant dans 30 jours"
+                            domain="[
+                                ('jours_restants', '&lt;=', 30),
+                                ('jours_restants', '&gt;=', 0),
+                                ('state', '=', 'actif')
+                            ]"/>
+                    <group expand="0" string="Grouper par">
+                        <filter name="group_state"
+                                string="État"
+                                context="{'group_by': 'state'}"/>
+                        <filter name="group_type"
+                                string="Type"
+                                context="{'group_by': 'type_contrat'}"/>
+                        <filter name="group_fournisseur"
+                                string="Fournisseur"
+                                context="{'group_by': 'fournisseur_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

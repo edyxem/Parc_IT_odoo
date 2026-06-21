@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             ACTIONS PRINCIPALES
+        ══════════════════════════════════════════════════════ -->
+
+        <record id="action_it_equipement" model="ir.actions.act_window">
+            <field name="name">Équipements</field>
+            <field name="res_model">it.equipement</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucun équipement enregistré
+                </p>
+                <p>Commencez par ajouter vos équipements informatiques.</p>
+            </field>
+        </record>
+
+        <record id="action_it_equipement_maintenance"
+                model="ir.actions.act_window">
+            <field name="name">En maintenance</field>
+            <field name="res_model">it.equipement</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', '=', 'maintenance')]</field>
+            <field name="context">{'search_default_maintenance': 1}</field>
+        </record>
+
+        <record id="action_it_equipement_garantie_expiree"
+                model="ir.actions.act_window">
+            <field name="name">Garanties expirées</field>
+            <field name="res_model">it.equipement</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('garantie_expiree', '=', True)]</field>
+        </record>
+
+        <record id="action_it_affectation" model="ir.actions.act_window">
+            <field name="name">Affectations</field>
+            <field name="res_model">it.affectation</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+        </record>
+
+        <record id="action_it_intervention" model="ir.actions.act_window">
+            <field name="name">Interventions</field>
+            <field name="res_model">it.intervention</field>
+            <field name="view_mode">list,calendar,form</field>
+        </record>
+
+        <record id="action_it_intervention_calendrier"
+                model="ir.actions.act_window">
+            <field name="name">Calendrier des interventions</field>
+            <field name="res_model">it.intervention</field>
+            <field name="view_mode">calendar,list,form</field>
+        </record>
+
+        <record id="action_it_contrat" model="ir.actions.act_window">
+            <field name="name">Contrats</field>
+            <field name="res_model">it.contrat</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_it_contrat_expirant"
+                model="ir.actions.act_window">
+            <field name="name">Contrats expirant bientôt</field>
+            <field name="res_model">it.contrat</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[
+                ('expire_bientot', '=', True),
+                ('state', '=', 'actif')
+            ]</field>
+        </record>
+
+        <record id="action_it_alerte" model="ir.actions.act_window">
+            <field name="name">Alertes</field>
+            <field name="res_model">it.alerte</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', '=', 'actif')]</field>
+        </record>
+
+        <!-- Wizard Import CSV -->
+        <record id="action_wizard_import_csv"
+                model="ir.actions.act_window">
+            <field name="name">Import CSV</field>
+            <field name="res_model">wizard.import.csv</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Wizard Scan Alertes -->
+        <record id="action_wizard_scan_alerte"
+                model="ir.actions.act_window">
+            <field name="name">Scanner les alertes</field>
+            <field name="res_model">wizard.scan.alerte</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             MENU PRINCIPAL
+        ══════════════════════════════════════════════════════ -->
+
+        <menuitem id="menu_it_parc_root"
+                  name="IT Parc"
+                  sequence="50"
+                  web_icon="it_parc,static/description/icon.png"
+                  groups="it_parc.group_it_technicien"/>
+
+        <!-- Tableau de bord -->
+        <menuitem id="menu_it_dashboard"
+                  name="Tableau de bord"
+                  parent="menu_it_parc_root"
+                  action="action_it_dashboard"
+                  sequence="1"
+                  groups="it_parc.group_it_technicien"/>
+
+        <!-- Équipements -->
+        <menuitem id="menu_it_equipement_root"
+                  name="Équipements"
+                  parent="menu_it_parc_root"
+                  sequence="10"
+                  groups="it_parc.group_it_technicien"/>
+
+        <menuitem id="menu_it_equipement_all"
+                  name="Tous les équipements"
+                  parent="menu_it_equipement_root"
+                  action="action_it_equipement"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_equipement_maintenance"
+                  name="En maintenance"
+                  parent="menu_it_equipement_root"
+                  action="action_it_equipement_maintenance"
+                  sequence="2"/>
+
+        <menuitem id="menu_it_equipement_garantie"
+                  name="Garanties expirées"
+                  parent="menu_it_equipement_root"
+                  action="action_it_equipement_garantie_expiree"
+                  sequence="3"
+                  groups="it_parc.group_it_manager"/>
+
+        <!-- Interventions -->
+        <menuitem id="menu_it_intervention_root"
+                  name="Interventions"
+                  parent="menu_it_parc_root"
+                  sequence="20"
+                  groups="it_parc.group_it_technicien"/>
+
+        <menuitem id="menu_it_intervention_all"
+                  name="Toutes les interventions"
+                  parent="menu_it_intervention_root"
+                  action="action_it_intervention"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_intervention_cal"
+                  name="Calendrier"
+                  parent="menu_it_intervention_root"
+                  action="action_it_intervention_calendrier"
+                  sequence="2"/>
+
+        <!-- Affectations -->
+        <menuitem id="menu_it_affectation_root"
+                  name="Affectations"
+                  parent="menu_it_parc_root"
+                  sequence="30"
+                  groups="it_parc.group_it_manager"/>
+
+        <menuitem id="menu_it_affectation_all"
+                  name="Historique"
+                  parent="menu_it_affectation_root"
+                  action="action_it_affectation"
+                  sequence="1"/>
+
+        <!-- Contrats -->
+        <menuitem id="menu_it_contrat_root"
+                  name="Contrats"
+                  parent="menu_it_parc_root"
+                  sequence="40"
+                  groups="it_parc.group_it_manager"/>
+
+        <menuitem id="menu_it_contrat_all"
+                  name="Tous les contrats"
+                  parent="menu_it_contrat_root"
+                  action="action_it_contrat"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_contrat_expirant"
+                  name="Expirant bientôt"
+                  parent="menu_it_contrat_root"
+                  action="action_it_contrat_expirant"
+                  sequence="2"/>
+
+        <!-- Alertes -->
+        <menuitem id="menu_it_alerte"
+                  name="Alertes"
+                  parent="menu_it_parc_root"
+                  action="action_it_alerte"
+                  sequence="50"
+                  groups="it_parc.group_it_technicien"/>
+
+        <!-- Configuration -->
+        <menuitem id="menu_it_config_root"
+                  name="Configuration"
+                  parent="menu_it_parc_root"
+                  sequence="100"
+                  groups="it_parc.group_it_manager"/>
+
+        <menuitem id="menu_it_import_csv"
+                  name="Import CSV"
+                  parent="menu_it_config_root"
+                  action="action_wizard_import_csv"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_scan_alerte"
+                  name="Scanner les alertes"
+                  parent="menu_it_config_root"
+                  action="action_wizard_scan_alerte"
+                  sequence="2"/>
+
+    </data>
+</odoo>

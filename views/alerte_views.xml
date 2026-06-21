@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE LISTE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_alerte_list" model="ir.ui.view">
+            <field name="name">it.alerte.list</field>
+            <field name="model">it.alerte</field>
+            <field name="arch" type="xml">
+                <list string="Alertes"
+                      decoration-danger="urgence == 'critique' and
+                                        state == 'actif'"
+                      decoration-warning="urgence == 'haute' and
+                                          state == 'actif'"
+                      decoration-muted="state != 'actif'">
+                    <field name="name"/>
+                    <field name="type_alerte"
+                           widget="badge"/>
+                    <field name="equipement_id"
+                           optional="show"/>
+                    <field name="contrat_id"
+                           optional="show"/>
+                    <field name="date_echeance"/>
+                    <field name="jours_avant"
+                           string="Jours restants"
+                           decoration-danger="jours_avant &lt;= 7"
+                           decoration-warning="jours_avant &gt; 7 and
+                                               jours_avant &lt;= 30"/>
+                    <field name="urgence"
+                           widget="badge"
+                           decoration-danger="urgence == 'critique'"
+                           decoration-warning="urgence == 'haute'"
+                           decoration-success="urgence == 'normale'"/>
+                    <field name="state"
+                           widget="badge"
+                           decoration-success="state == 'traite'"
+                           decoration-secondary="state == 'ignore'"
+                           decoration-warning="state == 'actif'"/>
+                    <button name="action_traiter"
+                            string="Traiter"
+                            type="object"
+                            icon="fa-check"
+                            invisible="state != 'actif'"/>
+                    <button name="action_ignorer"
+                            string="Ignorer"
+                            type="object"
+                            icon="fa-times"
+                            invisible="state != 'actif'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE FORMULAIRE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_alerte_form" model="ir.ui.view">
+            <field name="name">it.alerte.form</field>
+            <field name="model">it.alerte</field>
+            <field name="arch" type="xml">
+                <form string="Alerte">
+                    <header>
+                        <button name="action_traiter"
+                                string="Marquer comme traitée"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'actif'"/>
+                        <button name="action_ignorer"
+                                string="Ignorer"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="state != 'actif'"
+                                confirm="Confirmer l'ignorance de cette alerte ?"/>
+                        <button name="action_reactiver"
+                                string="Réactiver"
+                                type="object"
+                                invisible="state == 'actif'"/>
+                        <field name="state"
+                               widget="statusbar"
+                               statusbar_visible="actif,traite,ignore"/>
+                    </header>
+
+                    <sheet>
+
+                        <!-- Bandeau urgence critique -->
+                        <div class="alert alert-danger"
+                             role="alert"
+                             invisible="urgence != 'critique' or
+                                       state != 'actif'">
+                            <strong>🚨 CRITIQUE</strong> —
+                            Cette alerte expire dans
+                            <field name="jours_avant"
+                                   class="d-inline"/>
+                            jour(s) !
+                        </div>
+
+                        <div class="alert alert-warning"
+                             role="alert"
+                             invisible="urgence != 'haute' or
+                                       state != 'actif'">
+                            <strong>⚠ Haute priorité</strong> —
+                            Cette alerte expire dans
+                            <field name="jours_avant"
+                                   class="d-inline"/>
+                            jour(s).
+                        </div>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"
+                                       placeholder="Intitulé de l'alerte…"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Type et source">
+                                <field name="type_alerte"
+                                       widget="radio"/>
+                                <field name="equipement_id"
+                                       invisible="type_alerte != 'garantie'"/>
+                                <field name="contrat_id"
+                                       invisible="type_alerte != 'contrat'"/>
+                            </group>
+                            <group string="Échéance">
+                                <field name="date_echeance"/>
+                                <field name="jours_avant"
+                                       readonly="1"
+                                       string="Jours restants"/>
+                                <field name="urgence"
+                                       readonly="1"
+                                       widget="badge"
+                                       decoration-danger="urgence == 'critique'"
+                                       decoration-warning="urgence == 'haute'"
+                                       decoration-success="urgence == 'normale'"/>
+                            </group>
+                        </group>
+
+                        <group string="Destinataires">
+                            <field name="user_ids"
+                                   nolabel="1"
+                                   widget="many2many_tags"/>
+                        </group>
+
+                        <group string="Notes">
+                            <field name="notes"
+                                   nolabel="1"
+                                   placeholder="Actions à entreprendre…"/>
+                        </group>
+
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════
+             VUE RECHERCHE
+        ══════════════════════════════════════════════════════ -->
+        <record id="view_it_alerte_search" model="ir.ui.view">
+            <field name="name">it.alerte.search</field>
+            <field name="model">it.alerte</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher une alerte">
+                    <field name="name"/>
+                    <field name="equipement_id"/>
+                    <field name="contrat_id"/>
+                    <separator/>
+                    <filter name="actif"
+                            string="Actives"
+                            domain="[('state', '=', 'actif')]"/>
+                    <filter name="traite"
+                            string="Traitées"
+                            domain="[('state', '=', 'traite')]"/>
+                    <filter name="ignore"
+                            string="Ignorées"
+                            domain="[('state', '=', 'ignore')]"/>
+                    <separator/>
+                    <filter name="critique"
+                            string="Critiques (≤ 7j)"
+                            domain="[
+                                ('urgence', '=', 'critique'),
+                                ('state', '=', 'actif')
+                            ]"/>
+                    <filter name="haute"
+                            string="Haute priorité (≤ 30j)"
+                            domain="[
+                                ('urgence', '=', 'haute'),
+                                ('state', '=', 'actif')
+                            ]"/>
+                    <separator/>
+                    <filter name="garantie"
+                            string="Garanties"
+                            domain="[('type_alerte', '=', 'garantie')]"/>
+                    <filter name="contrat"
+                            string="Contrats"
+                            domain="[('type_alerte', '=', 'contrat')]"/>
+                    <group expand="0" string="Grouper par">
+                        <filter name="group_type"
+                                string="Type"
+                                context="{'group_by': 'type_alerte'}"/>
+                        <filter name="group_urgence"
+                                string="Urgence"
+                                context="{'group_by': 'urgence'}"/>
+                        <filter name="group_state"
+                                string="État"
+                                context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

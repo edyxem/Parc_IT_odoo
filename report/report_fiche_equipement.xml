@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_fiche_equipement_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="eq">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- ── En-tête ──────────────────── -->
+                        <div class="row mb-4">
+                            <div class="col-8">
+                                <h2>
+                                    Fiche équipement
+                                </h2>
+                                <h3 class="text-muted">
+                                    <t t-esc="eq.name"/>
+                                </h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <span class="badge bg-primary fs-6">
+                                    <t t-esc="eq.reference"/>
+                                </span>
+                                <br/>
+                                <span t-attf-class="badge mt-1
+                                    #{ 'bg-success'
+                                       if eq.state == 'affecte'
+                                       else 'bg-warning'
+                                       if eq.state == 'maintenance'
+                                       else 'bg-danger'
+                                       if eq.state == 'retire'
+                                       else 'bg-secondary' }">
+                                    <t t-esc="dict(
+                                        eq.fields_get(
+                                            ['state'])['state']['selection']
+                                    ).get(eq.state, eq.state)"/>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- ── Informations générales ────── -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h4 class="border-bottom pb-1">
+                                    Informations générales
+                                </h4>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm
+                                              table-borderless">
+                                    <tr>
+                                        <td class="fw-bold w-50">
+                                            Catégorie
+                                        </td>
+                                        <td>
+                                            <t t-esc="dict(
+                                                eq.fields_get(
+                                                    ['categorie']
+                                                )['categorie']['selection']
+                                            ).get(eq.categorie, '')"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Marque</td>
+                                        <td>
+                                            <t t-esc="eq.marque or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Modèle</td>
+                                        <td>
+                                            <t t-esc="eq.modele or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Numéro de série
+                                        </td>
+                                        <td>
+                                            <t t-esc="eq.numero_serie
+                                                      or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Site</td>
+                                        <td>
+                                            <t t-esc="eq.site or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Localisation
+                                        </td>
+                                        <td>
+                                            <t t-esc="eq.localisation
+                                                      or '—'"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm
+                                              table-borderless">
+                                    <tr>
+                                        <td class="fw-bold w-50">
+                                            Date d'achat
+                                        </td>
+                                        <td>
+                                            <t t-esc="eq.date_achat
+                                                      or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Valeur d'achat
+                                        </td>
+                                        <td>
+                                            <t t-esc="'{:,.0f} FCFA'.format(
+                                                eq.valeur_achat)
+                                                if eq.valeur_achat
+                                                else '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Fin de garantie
+                                        </td>
+                                        <td t-attf-class="
+                                            #{ 'text-danger fw-bold'
+                                               if eq.garantie_expiree
+                                               else '' }">
+                                            <t t-esc="eq.date_fin_garantie
+                                                      or '—'"/>
+                                            <t t-if="eq.garantie_expiree">
+                                                (expirée)
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Fournisseur
+                                        </td>
+                                        <td>
+                                            <t t-esc="eq.fournisseur_id.name
+                                                      or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Employé affecté
+                                        </td>
+                                        <td>
+                                            <t t-esc="eq.employee_id.name
+                                                      or '—'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">
+                                            Département
+                                        </td>
+                                        <td>
+                                            <t t-esc="eq.department_id.name
+                                                      or '—'"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ── Caractéristiques techniques ── -->
+                        <t t-if="eq.processeur or eq.ram
+                                 or eq.stockage
+                                 or eq.systeme_exploitation
+                                 or eq.adresse_ip">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h4 class="border-bottom pb-1">
+                                        Caractéristiques techniques
+                                    </h4>
+                                    <table class="table table-sm
+                                                  table-borderless">
+                                        <t t-if="eq.processeur">
+                                            <tr>
+                                                <td class="fw-bold w-25">
+                                                    Processeur
+                                                </td>
+                                                <td>
+                                                    <t t-esc="eq.processeur"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="eq.ram">
+                                            <tr>
+                                                <td class="fw-bold">RAM</td>
+                                                <td>
+                                                    <t t-esc="eq.ram"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="eq.stockage">
+                                            <tr>
+                                                <td class="fw-bold">
+                                                    Stockage
+                                                </td>
+                                                <td>
+                                                    <t t-esc="eq.stockage"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="eq.systeme_exploitation">
+                                            <tr>
+                                                <td class="fw-bold">
+                                                    Système d'exploitation
+                                                </td>
+                                                <td>
+                                                    <t t-esc="eq.systeme_exploitation"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="eq.adresse_ip">
+                                            <tr>
+                                                <td class="fw-bold">
+                                                    Adresse IP
+                                                </td>
+                                                <td>
+                                                    <t t-esc="eq.adresse_ip"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="eq.adresse_mac">
+                                            <tr>
+                                                <td class="fw-bold">
+                                                    Adresse MAC
+                                                </td>
+                                                <td>
+                                                    <t t-esc="eq.adresse_mac"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- ── Historique affectations ────── -->
+                        <t t-if="eq.affectation_ids">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h4 class="border-bottom pb-1">
+                                        Historique des affectations
+                                    </h4>
+                                    <table class="table table-sm
+                                                  table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Employé</th>
+                                                <th>Département</th>
+                                                <th>Date début</th>
+                                                <th>Date fin</th>
+                                                <th>Durée (j)</th>
+                                                <th>Statut</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="eq.affectation_ids
+                                                          .sorted('date_debut',
+                                                          reverse=True)"
+                                               t-as="aff">
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="aff.employee_id.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="aff.department_id.name or '—'"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="aff.date_debut"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="aff.date_fin or '—'"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="aff.duree_jours"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-if="aff.active">
+                                                            Active
+                                                        </t>
+                                                        <t t-else="">
+                                                            Clôturée
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- ── Interventions ─────────────── -->
+                        <t t-if="eq.intervention_ids">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h4 class="border-bottom pb-1">
+                                        Interventions
+                                        (<t t-esc="eq.nb_interventions"/>)
+                                    </h4>
+                                    <table class="table table-sm
+                                                  table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Référence</th>
+                                                <th>Type</th>
+                                                <th>Date</th>
+                                                <th>Technicien</th>
+                                                <th>Durée (h)</th>
+                                                <th>Coût (FCFA)</th>
+                                                <th>État</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="eq.intervention_ids
+                                                          .sorted('date_debut',
+                                                          reverse=True)"
+                                               t-as="inv">
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="inv.reference"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="inv.type_intervention"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="inv.date_debut"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="inv.technicien_id.name or '—'"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="'%.1f' % inv.duree_heures"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <t t-esc="'{:,.0f}'.format(inv.cout)"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="inv.state"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="fw-bold
+                                                       table-light">
+                                                <td colspan="5">
+                                                    Total coût maintenance
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-esc="'{:,.0f} FCFA'.format(
+                                                        eq.cout_total_maintenance)"/>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- ── Notes ────────────────────── -->
+                        <t t-if="eq.notes">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="border-bottom pb-1">
+                                        Notes
+                                    </h4>
+                                    <p>
+                                        <t t-esc="eq.notes"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </t>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
