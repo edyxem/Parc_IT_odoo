@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════
+             MENU PRINCIPAL
+        ══════════════════════════════════════════════════════ -->
+
+        <menuitem id="menu_it_parc_root"
+                  name="IT Parc"
+                  sequence="50"
+                  web_icon="it_parc,static/description/icon.png"
+                  groups="it_parc.group_it_technicien"/>
+
+        <!-- ── Tableau de bord ─────────────────────────────── -->
+        <menuitem id="menu_it_dashboard"
+                  name="Tableau de bord"
+                  parent="menu_it_parc_root"
+                  action="action_it_dashboard"
+                  sequence="1"
+                  groups="it_parc.group_it_technicien"/>
+
+        <!-- ── Équipements ─────────────────────────────────── -->
+        <menuitem id="menu_it_equipement_root"
+                  name="Équipements"
+                  parent="menu_it_parc_root"
+                  sequence="10"
+                  groups="it_parc.group_it_technicien"/>
+
+        <menuitem id="menu_it_equipement_all"
+                  name="Tous les équipements"
+                  parent="menu_it_equipement_root"
+                  action="action_it_equipement"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_equipement_maintenance"
+                  name="En maintenance"
+                  parent="menu_it_equipement_root"
+                  action="action_it_equipement_maintenance"
+                  sequence="2"/>
+
+        <menuitem id="menu_it_equipement_garantie"
+                  name="Garanties expirées"
+                  parent="menu_it_equipement_root"
+                  action="action_it_equipement_garantie_expiree"
+                  sequence="3"
+                  groups="it_parc.group_it_manager"/>
+
+        <!-- ── Interventions ───────────────────────────────── -->
+        <menuitem id="menu_it_intervention_root"
+                  name="Interventions"
+                  parent="menu_it_parc_root"
+                  sequence="20"
+                  groups="it_parc.group_it_technicien"/>
+
+        <menuitem id="menu_it_intervention_all"
+                  name="Toutes les interventions"
+                  parent="menu_it_intervention_root"
+                  action="action_it_intervention"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_intervention_cal"
+                  name="Calendrier"
+                  parent="menu_it_intervention_root"
+                  action="action_it_intervention_calendrier"
+                  sequence="2"/>
+
+        <!-- ── Affectations ────────────────────────────────── -->
+        <menuitem id="menu_it_affectation_root"
+                  name="Affectations"
+                  parent="menu_it_parc_root"
+                  sequence="30"
+                  groups="it_parc.group_it_manager"/>
+
+        <menuitem id="menu_it_affectation_all"
+                  name="Historique"
+                  parent="menu_it_affectation_root"
+                  action="action_it_affectation"
+                  sequence="1"/>
+
+        <!-- ── Contrats ────────────────────────────────────── -->
+        <menuitem id="menu_it_contrat_root"
+                  name="Contrats"
+                  parent="menu_it_parc_root"
+                  sequence="40"
+                  groups="it_parc.group_it_manager"/>
+
+        <menuitem id="menu_it_contrat_all"
+                  name="Tous les contrats"
+                  parent="menu_it_contrat_root"
+                  action="action_it_contrat"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_contrat_expirant"
+                  name="Expirant bientôt"
+                  parent="menu_it_contrat_root"
+                  action="action_it_contrat_expirant"
+                  sequence="2"/>
+
+        <!-- ── Alertes ─────────────────────────────────────── -->
+        <menuitem id="menu_it_alerte"
+                  name="Alertes"
+                  parent="menu_it_parc_root"
+                  action="action_it_alerte"
+                  sequence="50"
+                  groups="it_parc.group_it_technicien"/>
+
+        <!-- ── Configuration ───────────────────────────────── -->
+        <menuitem id="menu_it_config_root"
+                  name="Configuration"
+                  parent="menu_it_parc_root"
+                  sequence="100"
+                  groups="it_parc.group_it_manager"/>
+
+        <menuitem id="menu_it_import_csv"
+                  name="Import CSV"
+                  parent="menu_it_config_root"
+                  action="action_wizard_import_csv"
+                  sequence="1"/>
+
+        <menuitem id="menu_it_scan_alerte"
+                  name="Scanner les alertes"
+                  parent="menu_it_config_root"
+                  action="action_wizard_scan_alerte"
+                  sequence="2"/>
+
+    </data>
+</odoo>

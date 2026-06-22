@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'IT Parc - Gestion de parc informatique',
+    'name': 'IT Parc',
     'version': '18.0.1.0.0',
     'category': 'Technical',
     'summary': 'Gestion complète du parc informatique de TECHPARK CI',
@@ -14,7 +14,7 @@
         - Rapports PDF et exports Excel
         - Dashboard OWL
     """,
-    'author': 'TECHPARK CI',
+    'author': 'Tossou',
     'website': 'https://www.techpark-ci.com',
     'license': 'LGPL-3',
 
@@ -22,11 +22,8 @@
         'base',
         'mail',
         'hr',
-        'contacts',
         'stock',
-        'purchase',
-        'account',
-        'maintenance',
+        'contacts',
         'web',
     ],
 
@@ -37,6 +34,9 @@
 
         'data/ir_sequence.xml',
         'data/ir_cron.xml',
+        
+        'views/it_parc_menus.xml',
+        'views/it_parc_actions.xml',
 
         'views/dashboard_action.xml',
 
@@ -45,7 +45,7 @@
         'views/intervention_views.xml',
         'views/contrat_views.xml',
         'views/alerte_views.xml',
-        'views/menus.xml',
+        
 
         'wizards/wizard_reaffectation_views.xml',
         'wizards/wizard_import_csv_views.xml',
