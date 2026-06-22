@@ -21,7 +21,7 @@
                         </group>
 
                         <div class="alert alert-info"
-                             role="alert"
+                             role="status"
                              invisible="state == 'done'">
                             <strong>Format CSV attendu :</strong><br/>
                             <code>numero_serie, name, categorie, marque,

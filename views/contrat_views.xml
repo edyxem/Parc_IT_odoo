@@ -9,40 +9,24 @@
             <field name="name">it.contrat.list</field>
             <field name="model">it.contrat</field>
             <field name="arch" type="xml">
-                <list string="Contrats"
-                      decoration-danger="state == 'expire' or
-                                        (state == 'actif' and
-                                         jours_restants &lt;= 30)"
-                      decoration-warning="state == 'actif' and
-                                          jours_restants &gt; 30 and
-                                          jours_restants &lt;= 60"
-                      decoration-success="state == 'actif' and
-                                          jours_restants &gt; 60"
+                <list decoration-danger="state == 'expire' or (state == 'actif' and jours_restants &lt;= 30)"
+                      decoration-warning="state == 'actif' and jours_restants &gt; 30 and jours_restants &lt;= 60"
+                      decoration-success="state == 'actif' and jours_restants &gt; 60"
                       decoration-muted="state in ('resilie', 'renouvele')">
                     <field name="reference"/>
                     <field name="name"/>
-                    <field name="type_contrat"
-                           widget="badge"/>
+                    <field name="type_contrat" widget="badge"/>
                     <field name="fournisseur_id"/>
                     <field name="date_debut" optional="show"/>
                     <field name="date_fin"/>
-                    <field name="jours_restants"
-                           string="Jours restants"
-                           decoration-danger="jours_restants &lt;= 30"
-                           decoration-warning="jours_restants &gt; 30 and
-                                               jours_restants &lt;= 60"/>
+                    <field name="jours_restants" string="Jours restants"/>
                     <field name="montant"
                            string="Montant (FCFA)"
                            optional="show"/>
                     <field name="expire_bientot"
                            widget="boolean"
                            optional="hide"/>
-                    <field name="state"
-                           widget="badge"
-                           decoration-success="state == 'actif'"
-                           decoration-danger="state == 'expire'"
-                           decoration-secondary="state in ('resilie',
-                                                           'renouvele')"/>
+                    <field name="state" widget="badge"/>
                     <button name="action_renouveler"
                             string="Renouveler"
                             type="object"
@@ -65,15 +49,12 @@
                                 string="Renouveler"
                                 type="object"
                                 class="btn-primary"
-                                invisible="state in ('resilie',
-                                                     'renouvele')"/>
+                                invisible="state in ('resilie', 'renouvele')"/>
                         <button name="action_resilier"
                                 string="Résilier"
                                 type="object"
                                 class="btn-danger"
-                                invisible="state in ('resilie',
-                                                     'renouvele',
-                                                     'expire')"
+                                invisible="state in ('resilie', 'renouvele', 'expire')"
                                 confirm="Confirmer la résiliation de ce contrat ?"/>
                         <button name="action_export_contrats_excel"
                                 string="Exporter Excel"
@@ -86,13 +67,10 @@
 
                     <sheet>
 
-                        <!-- Alerte expiration imminente -->
                         <div class="alert alert-danger"
                              role="alert"
-                             invisible="not (state == 'actif' and
-                                            jours_restants &lt;= 30 and
-                                            jours_restants &gt;= 0)">
-                            <strong>⚠ Expiration imminente</strong> —
+                             invisible="not (state == 'actif' and jours_restants &lt;= 30 and jours_restants &gt;= 0)">
+                            <strong>Expiration imminente</strong> —
                             Ce contrat expire dans
                             <field name="jours_restants"
                                    class="d-inline"/>
@@ -101,10 +79,8 @@
 
                         <div class="alert alert-warning"
                              role="alert"
-                             invisible="not (state == 'actif' and
-                                            jours_restants &gt; 30 and
-                                            jours_restants &lt;= 60)">
-                            <strong>⚠ Attention</strong> —
+                             invisible="not (state == 'actif' and jours_restants &gt; 30 and jours_restants &lt;= 60)">
+                            <strong>Attention</strong> —
                             Ce contrat expire dans
                             <field name="jours_restants"
                                    class="d-inline"/>

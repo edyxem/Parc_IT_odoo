@@ -9,35 +9,17 @@
             <field name="name">it.alerte.list</field>
             <field name="model">it.alerte</field>
             <field name="arch" type="xml">
-                <list string="Alertes"
-                      decoration-danger="urgence == 'critique' and
-                                        state == 'actif'"
-                      decoration-warning="urgence == 'haute' and
-                                          state == 'actif'"
+                <list decoration-danger="urgence == 'critique' and state == 'actif'"
+                      decoration-warning="urgence == 'haute' and state == 'actif'"
                       decoration-muted="state != 'actif'">
                     <field name="name"/>
-                    <field name="type_alerte"
-                           widget="badge"/>
-                    <field name="equipement_id"
-                           optional="show"/>
-                    <field name="contrat_id"
-                           optional="show"/>
+                    <field name="type_alerte" widget="badge"/>
+                    <field name="equipement_id" optional="show"/>
+                    <field name="contrat_id" optional="show"/>
                     <field name="date_echeance"/>
-                    <field name="jours_avant"
-                           string="Jours restants"
-                           decoration-danger="jours_avant &lt;= 7"
-                           decoration-warning="jours_avant &gt; 7 and
-                                               jours_avant &lt;= 30"/>
-                    <field name="urgence"
-                           widget="badge"
-                           decoration-danger="urgence == 'critique'"
-                           decoration-warning="urgence == 'haute'"
-                           decoration-success="urgence == 'normale'"/>
-                    <field name="state"
-                           widget="badge"
-                           decoration-success="state == 'traite'"
-                           decoration-secondary="state == 'ignore'"
-                           decoration-warning="state == 'actif'"/>
+                    <field name="jours_avant" string="Jours restants"/>
+                    <field name="urgence" widget="badge"/>
+                    <field name="state" widget="badge"/>
                     <button name="action_traiter"
                             string="Traiter"
                             type="object"
@@ -83,12 +65,10 @@
 
                     <sheet>
 
-                        <!-- Bandeau urgence critique -->
                         <div class="alert alert-danger"
                              role="alert"
-                             invisible="urgence != 'critique' or
-                                       state != 'actif'">
-                            <strong>🚨 CRITIQUE</strong> —
+                             invisible="urgence != 'critique' or state != 'actif'">
+                            <strong>CRITIQUE</strong> —
                             Cette alerte expire dans
                             <field name="jours_avant"
                                    class="d-inline"/>
@@ -97,9 +77,8 @@
 
                         <div class="alert alert-warning"
                              role="alert"
-                             invisible="urgence != 'haute' or
-                                       state != 'actif'">
-                            <strong>⚠ Haute priorité</strong> —
+                             invisible="urgence != 'haute' or state != 'actif'">
+                            <strong>Haute priorité</strong> —
                             Cette alerte expire dans
                             <field name="jours_avant"
                                    class="d-inline"/>
@@ -129,10 +108,7 @@
                                        string="Jours restants"/>
                                 <field name="urgence"
                                        readonly="1"
-                                       widget="badge"
-                                       decoration-danger="urgence == 'critique'"
-                                       decoration-warning="urgence == 'haute'"
-                                       decoration-success="urgence == 'normale'"/>
+                                       widget="badge"/>
                             </group>
                         </group>
 

@@ -163,206 +163,197 @@ class ItContrat(models.Model):
                 raise UserError('Ce contrat est déjà résilié.')
         self.write({'state': 'resilie'})
 
-
+    # ── Cron : passage automatique en expiré ───────────────────
     @api.model
     def _cron_maj_contrats_expires(self):
         """Passe automatiquement en 'expire' les contrats
-    dont la date de fin est dépassée."""
+        dont la date de fin est dépassée."""
         contrats = self.search([
-        ('state', '=', 'actif'),
-        ('date_fin', '<', date.today()),
+            ('state', '=', 'actif'),
+            ('date_fin', '<', date.today()),
         ])
         if contrats:
             contrats.write({'state': 'expire'})
-    
-    # ── Export Excel : Contrats expirant ──────────────────────────
-def action_export_contrats_excel(self):
-    import io
-    import base64
-    import xlsxwriter
-    from datetime import datetime
 
-    output = io.BytesIO()
-    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    # ── Export Excel : Contrats expirant ──────────────────────
+    def action_export_contrats_excel(self):
+        import io
+        import base64
+        import xlsxwriter
+        from datetime import datetime
 
-    # ── Formats ────────────────────────────────────────────────
-    fmt_titre = workbook.add_format({
-        'bold': True, 'font_size': 14,
-        'font_color': '#FFFFFF', 'bg_color': '#1F4E79',
-        'align': 'center', 'valign': 'vcenter',
-    })
-    fmt_header = workbook.add_format({
-        'bold': True, 'font_color': '#FFFFFF',
-        'bg_color': '#2E75B6', 'border': 1,
-        'align': 'center', 'valign': 'vcenter',
-        'text_wrap': True,
-    })
-    fmt_cell = workbook.add_format({
-        'font_size': 9, 'border': 1,
-    })
-    fmt_cell_center = workbook.add_format({
-        'font_size': 9, 'border': 1, 'align': 'center',
-    })
-    fmt_money = workbook.add_format({
-        'font_size': 9, 'border': 1,
-        'num_format': '#,##0', 'align': 'right',
-    })
-    fmt_date = workbook.add_format({
-        'font_size': 9, 'border': 1,
-        'num_format': 'dd/mm/yyyy', 'align': 'center',
-    })
-    fmt_total = workbook.add_format({
-        'bold': True, 'bg_color': '#D6E4F0',
-        'border': 1, 'num_format': '#,##0',
-        'align': 'right',
-    })
-    # Rouge : expire dans < 30j
-    fmt_critique = workbook.add_format({
-        'font_size': 9, 'border': 1,
-        'bg_color': '#FFCCCC', 'font_color': '#C00000',
-        'bold': True, 'align': 'center',
-    })
-    # Orange : expire dans 30-60j
-    fmt_attention = workbook.add_format({
-        'font_size': 9, 'border': 1,
-        'bg_color': '#FCE4D6', 'font_color': '#833C00',
-        'align': 'center',
-    })
-    # Vert : > 60j
-    fmt_ok = workbook.add_format({
-        'font_size': 9, 'border': 1,
-        'bg_color': '#E2EFDA', 'font_color': '#375623',
-        'align': 'center',
-    })
-    fmt_expire = workbook.add_format({
-        'font_size': 9, 'border': 1,
-        'bg_color': '#808080', 'font_color': '#FFFFFF',
-        'align': 'center',
-    })
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
 
-    ws = workbook.add_worksheet('Contrats')
-    ws.freeze_panes(2, 0)
-    ws.set_zoom(90)
+        fmt_titre = workbook.add_format({
+            'bold': True, 'font_size': 14,
+            'font_color': '#FFFFFF', 'bg_color': '#1F4E79',
+            'align': 'center', 'valign': 'vcenter',
+        })
+        fmt_header = workbook.add_format({
+            'bold': True, 'font_color': '#FFFFFF',
+            'bg_color': '#2E75B6', 'border': 1,
+            'align': 'center', 'valign': 'vcenter',
+            'text_wrap': True,
+        })
+        fmt_cell = workbook.add_format({
+            'font_size': 9, 'border': 1,
+        })
+        fmt_cell_center = workbook.add_format({
+            'font_size': 9, 'border': 1, 'align': 'center',
+        })
+        fmt_money = workbook.add_format({
+            'font_size': 9, 'border': 1,
+            'num_format': '#,##0', 'align': 'right',
+        })
+        fmt_date = workbook.add_format({
+            'font_size': 9, 'border': 1,
+            'num_format': 'dd/mm/yyyy', 'align': 'center',
+        })
+        fmt_total = workbook.add_format({
+            'bold': True, 'bg_color': '#D6E4F0',
+            'border': 1, 'num_format': '#,##0',
+            'align': 'right',
+        })
+        fmt_critique = workbook.add_format({
+            'font_size': 9, 'border': 1,
+            'bg_color': '#FFCCCC', 'font_color': '#C00000',
+            'bold': True, 'align': 'center',
+        })
+        fmt_attention = workbook.add_format({
+            'font_size': 9, 'border': 1,
+            'bg_color': '#FCE4D6', 'font_color': '#833C00',
+            'align': 'center',
+        })
+        fmt_ok = workbook.add_format({
+            'font_size': 9, 'border': 1,
+            'bg_color': '#E2EFDA', 'font_color': '#375623',
+            'align': 'center',
+        })
+        fmt_expire = workbook.add_format({
+            'font_size': 9, 'border': 1,
+            'bg_color': '#808080', 'font_color': '#FFFFFF',
+            'align': 'center',
+        })
 
-    ws.merge_range(
-        'A1:I1',
-        f'Suivi des contrats fournisseurs — '
-        f'{datetime.now().strftime("%d/%m/%Y %H:%M")}',
-        fmt_titre
-    )
-    ws.set_row(0, 24)
+        ws = workbook.add_worksheet('Contrats')
+        ws.freeze_panes(2, 0)
+        ws.set_zoom(90)
 
-    headers = [
-        'Référence', 'Intitulé', 'Type',
-        'Fournisseur', 'Date début', 'Date fin',
-        'Jours restants', 'Montant (FCFA)', 'État',
-    ]
-    col_widths = [14, 35, 16, 25, 12, 12, 14, 18, 14]
-    for col, (h, w) in enumerate(zip(headers, col_widths)):
-        ws.write(1, col, h, fmt_header)
-        ws.set_column(col, col, w)
-    ws.set_row(1, 28)
-
-    # Trier par jours restants croissant
-    contrats = self.sorted('jours_restants')
-    for row, ct in enumerate(contrats, start=2):
-        ws.write(row, 0, ct.reference, fmt_cell_center)
-        ws.write(row, 1, ct.name, fmt_cell)
-        ws.write(row, 2, ct.type_contrat, fmt_cell_center)
-        ws.write(
-            row, 3,
-            ct.fournisseur_id.name
-            if ct.fournisseur_id else '—',
-            fmt_cell
+        ws.merge_range(
+            'A1:I1',
+            f'Suivi des contrats fournisseurs — '
+            f'{datetime.now().strftime("%d/%m/%Y %H:%M")}',
+            fmt_titre
         )
-        if ct.date_debut:
-            ws.write_datetime(
-                row, 4,
-                datetime.combine(
-                    ct.date_debut, datetime.min.time()),
-                fmt_date
+        ws.set_row(0, 24)
+
+        headers = [
+            'Référence', 'Intitulé', 'Type',
+            'Fournisseur', 'Date début', 'Date fin',
+            'Jours restants', 'Montant (FCFA)', 'État',
+        ]
+        col_widths = [14, 35, 16, 25, 12, 12, 14, 18, 14]
+        for col, (h, w) in enumerate(zip(headers, col_widths)):
+            ws.write(1, col, h, fmt_header)
+            ws.set_column(col, col, w)
+        ws.set_row(1, 28)
+
+        contrats = self.sorted('jours_restants')
+        for row, ct in enumerate(contrats, start=2):
+            ws.write(row, 0, ct.reference, fmt_cell_center)
+            ws.write(row, 1, ct.name, fmt_cell)
+            ws.write(row, 2, ct.type_contrat, fmt_cell_center)
+            ws.write(
+                row, 3,
+                ct.fournisseur_id.name
+                if ct.fournisseur_id else '—',
+                fmt_cell
             )
-        if ct.date_fin:
-            ws.write_datetime(
-                row, 5,
-                datetime.combine(
-                    ct.date_fin, datetime.min.time()),
-                fmt_date
+            if ct.date_debut:
+                ws.write_datetime(
+                    row, 4,
+                    datetime.combine(
+                        ct.date_debut, datetime.min.time()),
+                    fmt_date
+                )
+            if ct.date_fin:
+                ws.write_datetime(
+                    row, 5,
+                    datetime.combine(
+                        ct.date_fin, datetime.min.time()),
+                    fmt_date
+                )
+
+            j = ct.jours_restants
+            if ct.state in ('resilie', 'renouvele'):
+                fmt_j = fmt_expire
+            elif j < 0:
+                fmt_j = fmt_expire
+            elif j <= 30:
+                fmt_j = fmt_critique
+            elif j <= 60:
+                fmt_j = fmt_attention
+            else:
+                fmt_j = fmt_ok
+
+            ws.write(row, 6, j, fmt_j)
+            ws.write(row, 7, ct.montant, fmt_money)
+
+            state_labels = {
+                'actif': 'Actif',
+                'expire': 'Expiré',
+                'renouvele': 'Renouvelé',
+                'resilie': 'Résilié',
+            }
+            state_fmts = {
+                'actif': fmt_ok,
+                'expire': fmt_critique,
+                'renouvele': fmt_cell_center,
+                'resilie': fmt_expire,
+            }
+            ws.write(
+                row, 8,
+                state_labels.get(ct.state, ct.state),
+                state_fmts.get(ct.state, fmt_cell_center)
             )
 
-        # Coloration jours restants
-        j = ct.jours_restants
-        if ct.state in ('resilie', 'renouvele'):
-            fmt_j = fmt_expire
-        elif j < 0:
-            fmt_j = fmt_expire
-        elif j <= 30:
-            fmt_j = fmt_critique
-        elif j <= 60:
-            fmt_j = fmt_attention
-        else:
-            fmt_j = fmt_ok
-
-        ws.write(row, 6, j, fmt_j)
-        ws.write(row, 7, ct.montant, fmt_money)
-
-        # État coloré
-        state_labels = {
-            'actif': 'Actif',
-            'expire': 'Expiré',
-            'renouvele': 'Renouvelé',
-            'resilie': 'Résilié',
-        }
-        state_fmts = {
-            'actif': fmt_ok,
-            'expire': fmt_critique,
-            'renouvele': fmt_cell_center,
-            'resilie': fmt_expire,
-        }
+        last = 2 + len(contrats)
+        ws.write(last, 6, 'TOTAL', fmt_total)
         ws.write(
-            row, 8,
-            state_labels.get(ct.state, ct.state),
-            state_fmts.get(ct.state, fmt_cell_center)
+            last, 7,
+            sum(contrats.mapped('montant')),
+            fmt_total
         )
 
-    # Total montants
-    last = 2 + len(contrats)
-    ws.write(last, 6, 'TOTAL', fmt_total)
-    ws.write(
-        last, 7,
-        sum(contrats.mapped('montant')),
-        fmt_total
-    )
+        ws.write(last + 2, 0, 'Légende :', fmt_header)
+        ws.write(last + 3, 0, '≤ 30 jours', fmt_critique)
+        ws.write(last + 3, 1, 'Critique — action immédiate', fmt_cell)
+        ws.write(last + 4, 0, '31 à 60 jours', fmt_attention)
+        ws.write(last + 4, 1, 'Attention — anticiper', fmt_cell)
+        ws.write(last + 5, 0, '> 60 jours', fmt_ok)
+        ws.write(last + 5, 1, 'OK', fmt_cell)
+        ws.write(last + 6, 0, 'Expiré / Résilié', fmt_expire)
+        ws.write(last + 6, 1, 'Inactif', fmt_cell)
 
-    # ── Légende ────────────────────────────────────────────────
-    ws.write(last + 2, 0, 'Légende :', fmt_header)
-    ws.write(last + 3, 0, '≤ 30 jours', fmt_critique)
-    ws.write(last + 3, 1, 'Critique — action immédiate', fmt_cell)
-    ws.write(last + 4, 0, '31 à 60 jours', fmt_attention)
-    ws.write(last + 4, 1, 'Attention — anticiper', fmt_cell)
-    ws.write(last + 5, 0, '> 60 jours', fmt_ok)
-    ws.write(last + 5, 1, 'OK', fmt_cell)
-    ws.write(last + 6, 0, 'Expiré / Résilié', fmt_expire)
-    ws.write(last + 6, 1, 'Inactif', fmt_cell)
+        workbook.close()
+        output.seek(0)
 
-    workbook.close()
-    output.seek(0)
-
-    nom_fichier = (
-        f'suivi_contrats_'
-        f'{datetime.now().strftime("%Y%m%d_%H%M")}.xlsx'
-    )
-    attachment = self.env['ir.attachment'].create({
-        'name': nom_fichier,
-        'type': 'binary',
-        'datas': base64.b64encode(output.read()),
-        'mimetype': (
-            'application/vnd.openxmlformats-'
-            'officedocument.spreadsheetml.sheet'
-        ),
-    })
-    return {
-        'type': 'ir.actions.act_url',
-        'url': f'/web/content/{attachment.id}?download=true',
-        'target': 'self',
-    }
+        nom_fichier = (
+            f'suivi_contrats_'
+            f'{datetime.now().strftime("%Y%m%d_%H%M")}.xlsx'
+        )
+        attachment = self.env['ir.attachment'].create({
+            'name': nom_fichier,
+            'type': 'binary',
+            'datas': base64.b64encode(output.read()),
+            'mimetype': (
+                'application/vnd.openxmlformats-'
+                'officedocument.spreadsheetml.sheet'
+            ),
+        })
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
+        }

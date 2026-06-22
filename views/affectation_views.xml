@@ -9,8 +9,7 @@
             <field name="name">it.affectation.list</field>
             <field name="model">it.affectation</field>
             <field name="arch" type="xml">
-                <list string="Affectations"
-                      decoration-success="active == True"
+                <list decoration-success="active == True"
                       decoration-muted="active == False">
                     <field name="equipement_id"/>
                     <field name="employee_id"/>
@@ -50,9 +49,6 @@
                                 class="btn-warning"
                                 invisible="not active"
                                 confirm="Confirmer la clôture de cette affectation ?"/>
-                        <field name="active"
-                               widget="statusbar"
-                               statusbar_visible="1,0"/>
                     </header>
                     <sheet>
                         <group>
@@ -69,6 +65,8 @@
                                        string="Durée (jours)"/>
                                 <field name="user_id"
                                        readonly="1"/>
+                                <field name="active"
+                                       widget="boolean"/>
                             </group>
                         </group>
                         <group string="Motif">

@@ -18,6 +18,7 @@
                         </group>
 
                         <div class="alert alert-info"
+                             role="status"
                              invisible="state == 'done'">
                             Ce scan détecte les garanties et contrats
                             expirant dans les

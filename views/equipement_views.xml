@@ -9,8 +9,7 @@
             <field name="name">it.equipement.list</field>
             <field name="model">it.equipement</field>
             <field name="arch" type="xml">
-                <list string="Équipements"
-                      decoration-success="state == 'affecte'"
+                <list decoration-success="state == 'affecte'"
                       decoration-warning="state == 'maintenance'"
                       decoration-danger="state == 'retire'"
                       decoration-muted="state == 'brouillon'">
@@ -23,9 +22,7 @@
                     <field name="site" optional="show"/>
                     <field name="employee_id"/>
                     <field name="department_id" optional="hide"/>
-                    <field name="date_fin_garantie"
-                           decoration-danger="garantie_expiree"
-                           optional="show"/>
+                    <field name="date_fin_garantie" optional="show"/>
                     <field name="garantie_expiree" invisible="1"/>
                     <field name="nb_interventions"
                            string="Interventions"
@@ -33,12 +30,7 @@
                     <field name="cout_total_maintenance"
                            string="Coût maint. (FCFA)"
                            optional="show"/>
-                    <field name="state"
-                           widget="badge"
-                           decoration-success="state == 'affecte'"
-                           decoration-warning="state == 'maintenance'"
-                           decoration-danger="state == 'retire'"
-                           decoration-secondary="state == 'brouillon'"/>
+                    <field name="state" widget="badge"/>
                     <field name="valeur_achat"
                            string="Valeur (FCFA)"
                            optional="hide"/>
@@ -55,7 +47,6 @@
             <field name="arch" type="xml">
                 <form string="Équipement">
 
-                    <!-- Barre de statut -->
                     <header>
                         <button name="action_affecter"
                                 string="Affecter"
@@ -92,11 +83,10 @@
                     </header>
 
                     <sheet>
-                        <!-- Alerte garantie expirée -->
                         <div class="alert alert-danger"
                              role="alert"
                              invisible="not garantie_expiree">
-                            <strong>⚠ Garantie expirée</strong> —
+                            <strong>Garantie expirée</strong> —
                             La garantie de cet équipement a expiré
                             il y a
                             <field name="jours_avant_fin_garantie"
@@ -104,7 +94,6 @@
                             jour(s).
                         </div>
 
-                        <!-- Photo et titre -->
                         <div class="oe_title d-flex">
                             <field name="image"
                                    widget="image"
@@ -123,15 +112,12 @@
                                     <field name="name"
                                            placeholder="Nom de l'équipement…"/>
                                 </h1>
-                                <field name="categorie"
-                                       widget="badge"/>
+                                <field name="categorie" widget="badge"/>
                             </div>
                         </div>
 
-                        <!-- Onglets -->
                         <notebook>
 
-                            <!-- ── Onglet Informations ──── -->
                             <page string="Informations générales"
                                   name="infos">
                                 <group>
@@ -151,8 +137,7 @@
                                     <group string="Achat et garantie">
                                         <field name="date_achat"/>
                                         <field name="valeur_achat"/>
-                                        <field name="date_fin_garantie"
-                                               decoration-danger="garantie_expiree"/>
+                                        <field name="date_fin_garantie"/>
                                         <field name="jours_avant_fin_garantie"
                                                string="Jours restants garantie"
                                                readonly="1"/>
@@ -172,7 +157,6 @@
                                 </group>
                             </page>
 
-                            <!-- ── Onglet Technique ───────── -->
                             <page string="Caractéristiques techniques"
                                   name="technique">
                                 <group>
@@ -189,11 +173,10 @@
                                 </group>
                             </page>
 
-                            <!-- ── Onglet Affectations ────── -->
                             <page string="Historique affectations"
                                   name="affectations">
                                 <field name="affectation_ids"
-                                       context="{'default_equipement_id': active_id}">
+                                       context="{'default_equipement_id': id}">
                                     <list decoration-success="active == True"
                                           decoration-muted="active == False">
                                         <field name="employee_id"/>
@@ -217,7 +200,6 @@
                                 </field>
                             </page>
 
-                            <!-- ── Onglet Interventions ────── -->
                             <page string="Interventions"
                                   name="interventions">
                                 <group class="mb-3">
@@ -231,7 +213,7 @@
                                     </group>
                                 </group>
                                 <field name="intervention_ids"
-                                       context="{'default_equipement_id': active_id}">
+                                       context="{'default_equipement_id': id}">
                                     <list decoration-success="state == 'termine'"
                                           decoration-warning="state == 'en_cours'"
                                           decoration-info="state == 'planifie'"
@@ -245,21 +227,15 @@
                                                string="Durée (h)"/>
                                         <field name="cout"
                                                string="Coût (FCFA)"/>
-                                        <field name="state"
-                                               widget="badge"
-                                               decoration-success="state == 'termine'"
-                                               decoration-warning="state == 'en_cours'"
-                                               decoration-info="state == 'planifie'"
-                                               decoration-danger="state == 'annule'"/>
+                                        <field name="state" widget="badge"/>
                                     </list>
                                 </field>
                             </page>
 
-                            <!-- ── Onglet Alertes ──────────── -->
                             <page string="Alertes"
                                   name="alertes">
                                 <field name="alerte_ids"
-                                       context="{'default_equipement_id': active_id,
+                                       context="{'default_equipement_id': id,
                                                  'default_type_alerte': 'garantie'}">
                                     <list decoration-danger="urgence == 'critique'"
                                           decoration-warning="urgence == 'haute'"
@@ -269,13 +245,8 @@
                                         <field name="date_echeance"/>
                                         <field name="jours_avant"
                                                string="Jours restants"/>
-                                        <field name="urgence"
-                                               widget="badge"
-                                               decoration-danger="urgence == 'critique'"
-                                               decoration-warning="urgence == 'haute'"
-                                               decoration-success="urgence == 'normale'"/>
-                                        <field name="state"
-                                               widget="badge"/>
+                                        <field name="urgence" widget="badge"/>
+                                        <field name="state" widget="badge"/>
                                     </list>
                                 </field>
                             </page>
@@ -283,7 +254,6 @@
                         </notebook>
                     </sheet>
 
-                    <!-- Chatter -->
                     <chatter/>
 
                 </form>
@@ -308,82 +278,61 @@
                     <field name="site"/>
                     <templates>
                         <t t-name="card">
-                            <div t-attf-class="oe_kanban_card
-                                #{record.state.raw_value == 'retire'
-                                  ? 'bg-light text-muted' : ''}">
+                            <div class="oe_kanban_card">
 
-                                <!-- En-tête carte -->
                                 <div class="d-flex
                                             justify-content-between
                                             align-items-start mb-2">
                                     <strong>
                                         <field name="name"/>
                                     </strong>
-                                    <span t-attf-class="badge
-                                        #{record.state.raw_value == 'affecte'
-                                          ? 'bg-success'
-                                          : record.state.raw_value == 'maintenance'
-                                          ? 'bg-warning text-dark'
-                                          : record.state.raw_value == 'retire'
-                                          ? 'bg-danger'
-                                          : 'bg-secondary'}">
-                                        <field name="state"/>
-                                    </span>
+                                    <field name="state" widget="label_selection"/>
                                 </div>
 
-                                <!-- Référence et catégorie -->
                                 <div class="text-muted small mb-2">
                                     <field name="reference"/> —
                                     <field name="categorie"/>
                                 </div>
 
-                                <!-- Marque / Modèle -->
                                 <div class="mb-1">
-                                    <i class="fa fa-desktop me-1"/>
+                                    <i class="fa fa-desktop me-1"
+                                       title="Matériel" aria-label="Matériel"/>
                                     <field name="marque"/>
                                     <field name="modele"/>
                                 </div>
 
-                                <!-- Affecté à -->
                                 <div t-if="record.employee_id.raw_value"
                                      class="mb-1">
-                                    <i class="fa fa-user me-1
-                                              text-primary"/>
+                                    <i class="fa fa-user me-1 text-primary"
+                                       title="Employé" aria-label="Employé"/>
                                     <field name="employee_id"/>
                                 </div>
 
-                                <!-- Site -->
                                 <div t-if="record.site.raw_value"
                                      class="mb-1 small text-muted">
-                                    <i class="fa fa-map-marker me-1"/>
+                                    <i class="fa fa-map-marker me-1"
+                                       title="Site" aria-label="Site"/>
                                     <field name="site"/>
                                 </div>
 
-                                <!-- Alerte garantie -->
                                 <div t-if="record.garantie_expiree.raw_value"
                                      class="alert alert-danger
-                                            py-1 px-2 mt-2 mb-0
-                                            small">
-                                    ⚠ Garantie expirée
+                                            py-1 px-2 mt-2 mb-0 small"
+                                     role="alert">
+                                    Garantie expirée
                                 </div>
 
-                                <!-- Pied de carte -->
                                 <div class="d-flex
                                             justify-content-between
                                             align-items-center mt-2
                                             pt-2 border-top">
                                     <span class="small text-muted">
-                                        <i class="fa fa-wrench me-1"/>
+                                        <i class="fa fa-wrench me-1"
+                                           title="Interventions"
+                                           aria-label="Interventions"/>
                                         <field name="nb_interventions"/>
                                         intervention(s)
                                     </span>
-                                    <div class="oe_kanban_bottom_right">
-                                        <field name="image"
-                                               widget="image"
-                                               class="rounded"
-                                               style="width:28px;
-                                                      height:28px;"/>
-                                    </div>
                                 </div>
                             </div>
                         </t>
@@ -401,7 +350,6 @@
             <field name="arch" type="xml">
                 <search string="Rechercher un équipement">
 
-                    <!-- Champs de recherche -->
                     <field name="name"
                            string="Nom"
                            filter_domain="[
@@ -416,7 +364,6 @@
                     <field name="fournisseur_id"/>
                     <field name="categorie"/>
 
-                    <!-- Filtres prédéfinis -->
                     <separator/>
                     <filter name="affecte"
                             string="Affectés"
@@ -451,7 +398,6 @@
                             string="Réseau"
                             domain="[('categorie', '=', 'reseau')]"/>
 
-                    <!-- Grouper par -->
                     <group expand="0" string="Grouper par">
                         <filter name="group_state"
                                 string="État"

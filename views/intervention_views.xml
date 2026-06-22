@@ -9,18 +9,14 @@
             <field name="name">it.intervention.list</field>
             <field name="model">it.intervention</field>
             <field name="arch" type="xml">
-                <list string="Interventions"
-                      decoration-success="state == 'termine'"
+                <list decoration-success="state == 'termine'"
                       decoration-warning="state == 'en_cours'"
                       decoration-info="state == 'planifie'"
                       decoration-danger="state == 'annule'">
                     <field name="reference"/>
                     <field name="name"/>
                     <field name="equipement_id"/>
-                    <field name="type_intervention"
-                           widget="badge"
-                           decoration-danger="type_intervention == 'corrective'"
-                           decoration-success="type_intervention == 'preventive'"/>
+                    <field name="type_intervention" widget="badge"/>
                     <field name="technicien_id"/>
                     <field name="date_debut"/>
                     <field name="date_fin" optional="show"/>
@@ -30,12 +26,7 @@
                     <field name="cout"
                            string="Coût (FCFA)"
                            optional="show"/>
-                    <field name="state"
-                           widget="badge"
-                           decoration-success="state == 'termine'"
-                           decoration-warning="state == 'en_cours'"
-                           decoration-info="state == 'planifie'"
-                           decoration-danger="state == 'annule'"/>
+                    <field name="state" widget="badge"/>
                 </list>
             </field>
         </record>
@@ -75,11 +66,10 @@
                     </header>
 
                     <sheet>
-                        <!-- Alerte rapport manquant -->
                         <div class="alert alert-warning"
                              role="alert"
                              invisible="state != 'en_cours' or rapport">
-                            <strong>⚠ Rapport manquant</strong> —
+                            <strong>Rapport manquant</strong> —
                             Renseignez le rapport avant de terminer
                             l'intervention.
                         </div>
@@ -146,8 +136,7 @@
                           date_start="date_debut"
                           date_stop="date_fin"
                           color="type_intervention"
-                          mode="month"
-                          quick_add="False">
+                          mode="month">
                     <field name="name"/>
                     <field name="equipement_id"/>
                     <field name="technicien_id"/>
